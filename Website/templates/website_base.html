@@ -114,8 +114,10 @@
 <body>
 
 	<!-- Get Pro Button -->
-	<ul class="pro-features">
-		<a class="get-pro" href="#">More</a>
+	<!--<ul class="pro-features">
+		<a class="get-pro" href="#"> 
+			*
+		</a>
 		<li class="big-title">Advanced Solutions for Industrial Needs</li>
 		<li class="title">Our Key Offerings</li>
 		<li>Customized Material Handling Solutions</li>
@@ -128,7 +130,7 @@
 			<a href="#" target="_blank" class="btn">Get in Touch</a>
 		</div>
 	</ul>
-
+	-->
 
 	<!-- Header Area -->
 	<header class="header">
@@ -139,19 +141,19 @@
 					<div class="col-lg-6 col-md-5 col-12">
 						<!-- Contact -->
 						<ul class="top-link">
-							<li><a href="#">About</a></li>
-							<li><a href="#">Doctors</a></li>
-							<li><a href="#">Contact</a></li>
-							<li><a href="#">FAQ</a></li>
+							<li><a href="#">Link 1</a></li>
+							<li><a href="#">Link 2</a></li>
+							<li><a href="#">Link 3</a></li>
+							<li><a href="#">Link 4</a></li>
 						</ul>
 						<!-- End Contact -->
 					</div>
 					<div class="col-lg-6 col-md-7 col-12">
 						<!-- Top Contact -->
 						<ul class="top-contact">
-							<li><i class="fa fa-phone"></i>+880 1234 56789</li>
+							<li><i class="fa fa-phone"></i>+91 8888888888</li>
 							<li><i class="fa fa-envelope"></i><a
-									href="mailto:support@yourmail.com">support@yourmail.com</a></li>
+									href="mailto:support@yourmail.com">support@gmail.com</a></li>
 						</ul>
 						<!-- End Top Contact -->
 					</div>
@@ -179,7 +181,7 @@
 							<div class="main-menu">
 								<nav class="navigation">
 									<ul class="nav menu">
-										<li><a href="#">Home </a></li>
+										<li><a href="{% url "index" %}">Home </a></li>
 										<li><a href="#">About Us </a></li>
 										<li class=""><a href="#">Services <i class="icofont-rounded-down"></i></a>
 											<ul class="dropdown">
@@ -192,8 +194,7 @@
 										<li><a href="#">Equipment </a></li>
 										<li><a href="#">Safety  </a></li> 
 										<li><a href="#">Clients  </a></li> 
-
-										<li><a href="contact.html">Contact Us</a></li>
+ 
 									</ul>
 								</nav>
 							</div>
@@ -201,7 +202,7 @@
 						</div>
 						<div class="col-lg-2 col-12">
 							<div class="get-quote">
-								<a href="appointment.html" class="btn">Book Appointment</a>
+								<a href="appointment.html" class="btn">Contact Us</a>
 							</div>
 						</div>
 					</div>
@@ -217,19 +218,16 @@
 
 
 	<!-- Start Newsletter Area -->
-	<section class="newsletter section">
+	 <section class="newsletter section">
 		<div class="container">
 			<div class="row ">
 				<div class="col-lg-6  col-12">
-					<!-- Start Newsletter Form -->
 					<div class="subscribe-text ">
 						<h6>Sign up for newsletter</h6>
 						<p class="">Cu qui soleat partiendo urbanitas. Eum aperiri indoctum eu,<br> homero alterum.</p>
 					</div>
-					<!-- End Newsletter Form -->
 				</div>
 				<div class="col-lg-6  col-12">
-					<!-- Start Newsletter Form -->
 					<div class="subscribe-form ">
 						<form action="mail/mail.php" method="get" target="_blank" class="newsletter-inner">
 							<input name="EMAIL" placeholder="Your email address" class="common-input"
@@ -238,11 +236,10 @@
 							<button class="btn">Subscribe</button>
 						</form>
 					</div>
-					<!-- End Newsletter Form -->
 				</div>
 			</div>
 		</div>
-	</section>
+	</section> 
 	<!-- /End Newsletter Area -->
 
 	<!-- Footer Area -->
