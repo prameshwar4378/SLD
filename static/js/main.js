@@ -158,16 +158,16 @@
 			center: false, 
 			responsive:{
 				300: {
-					items:1,
+					items:2,
 				},
 				480: {
 					items:2,
 				},
 				768: {
-					items:2,
+					items:5,
 				},
 				1170: {
-					items:4,
+					items:6,
 				},
 			}
 		});
