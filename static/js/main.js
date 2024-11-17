@@ -152,7 +152,8 @@
 			items: 1, // Show only one item at a time
 			stagePadding: 50, // Adjust this value to control the visible portion of adjacent items
 			autoplay: true,
-			smartSpeed: 2000,
+			smartSpeed: 2500,
+			autoplayTimeout:50,
 			autoplayHoverPause: false,
 			dots: true,
 			center: false, 
