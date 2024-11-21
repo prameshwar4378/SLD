@@ -7,9 +7,14 @@ def index(request):
 def about_us(request):
     return render(request,"about_us.html")
 
-
 def material_handling(request):
     return render(request,"material-handling.html")
 
 def contact_us(request):
     return render(request,"contact.html")
+
+def crushing_services(request):
+    return render(request,"crushing-services.html")
+
+def equipment(request):
+    return render(request,"equipment.html")

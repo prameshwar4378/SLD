@@ -186,12 +186,12 @@
 										<li class=""><a href="#">Services <i class="icofont-rounded-down"></i></a>
 											<ul class="dropdown">
 												<li><a href="{% url "material_handling" %}">Material Handling</a></li>
-												<li><a href="index.html">Crushing Services</a></li>
+												<li><a href="{% url "crushing_services" %}">Crushing Services</a></li>
 												<li><a href="index.html">Transportation</a></li>
 												<li><a href="index.html">Mining & Construction</a></li>
 											</ul>
 										</li>
-										<li><a href="#">Equipment </a></li>
+										<li><a href="{% url "equipment" %}">Equipment </a></li>
 										<li><a href="#">Clients  </a></li> 
  
 									</ul>
@@ -201,7 +201,7 @@
 						</div>
 						<div class="col-lg-2 col-12">
 							<div class="get-quote">
-								<a href="appointment.html" class="btn">Contact Us</a>
+								<a href="{% url "contact_us" %}" class="btn">Contact Us</a>
 							</div>
 						</div>
 					</div>
