@@ -2,7 +2,273 @@
 {% load static %}
 {% block content %}
 <style>
-   
+    .services{
+        background-image: url('{% static "img/blog-left-dec.jpg" %}');
+        background-repeat: no-repeat;
+        width: 100%;
+     }
+
+
+ 
+/* Section Title Styling */
+.section-title h2 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.section-title p {
+    font-size: 16px;
+    color: #555;
+    margin-top: 10px;
+    margin-bottom: 0;
+    line-height: 1.6;
+}
+
+.section-title img {
+    margin: 15px 0;
+    max-width: 150px;
+}
+
+/* Single Service Card Styling */
+.single-service-new {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 20px;
+    padding: 20px 10px;
+    margin-bottom: 3px;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    position: relative;
+}
+
+.single-service-new img{ 
+    width: 100%;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    position: relative;
+    top: -10px;
+}
+
+
+.single-service-new:hover {
+    transform: translateY(-10px);
+    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.15);
+    border-color: #a80000;
+}
+
+.quantity-circle {
+    position: absolute;
+    top: -15px;
+    left: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: #a80000;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+    z-index: 2;
+}
+
+/* Highlight Circle on Hover */
+.single-service-new:hover .quantity-circle {
+    background-color: #ff4c4c;
+    transform: scale(1.1);
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+
+/* Service Icon Styling */
+.single-service-new i {
+    font-size: 48px;
+    color: #a80000;
+    margin-bottom: 15px;
+    transition: color 0.3s ease;
+}
+
+.single-service-new:hover i {
+    color: #a80000;
+}
+
+/* Service Title Styling */
+.single-service-new h4 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+    text-transform: capitalize;
+    transition: color 0.3s ease;
+}
+
+.single-service-new:hover h4 {
+    color: #a80000;
+}
+
+/* Service Description Styling */
+.single-service-new p {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .section-title h2 {
+        font-size: 28px;
+    }
+
+    .single-service-new {
+        padding: 15px;
+    }
+
+    .single-service-new h4 {
+        font-size: 18px;
+    }
+
+    .single-service-new i {
+        font-size: 40px;
+    }
+}
+
+
+
+
+
+
+
+
+
+/* Expertise Section Styling */
+.expertise-section {
+    background-color: #f9f9f9;
+    padding: 60px 0;
+}
+
+.timeline {
+    position: relative;
+    padding: 40px 0;
+}
+
+.timeline:before {
+    content: '';
+    position: absolute;
+    width: 4px;
+    background-color: #a80000;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.timeline-item {
+    position: relative;
+    width: 50%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.timeline-item.left {
+    left: 0;
+    text-align: right;
+}
+
+.timeline-item.right {
+    left: 50%;
+    text-align: left;
+}
+
+.timeline-item:before {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: #a80000;
+    border-radius: 50%;
+    top: 20px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+}
+
+.timeline-item .timeline-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 2;
+}
+
+.timeline-item.left .timeline-content {
+    transform: translateX(-20%);
+}
+
+.timeline-item.right .timeline-content {
+    transform: translateX(20%);
+}
+
+.timeline-item:hover .timeline-content {
+    background-color: #fda5a5;
+    color: #fff;
+    transform: translateX(0);
+    transition: all 0.5s ease-in-out;
+}
+
+.timeline-item:hover .timeline-content h4, p {
+    color: #fff;
+}
+
+.timeline-item h4 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #333;
+    transition: color 0.3s ease;
+}
+
+.timeline-item p {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.6;
+    margin: 0;
+    transition: color 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .timeline:before {
+        left: 20px;
+    }
+
+    .timeline-item {
+        width: 100%;
+        padding-left: 40px;
+    }
+
+    .timeline-item.left {
+        left: 0;
+        text-align: left;
+    }
+
+    .timeline-item.right {
+        left: 0;
+        text-align: left;
+    }
+
+    .timeline-item .timeline-content {
+        transform: none;
+    }
+}
+
 
 </style>
 <!-- Breadcrumbs -->
@@ -24,6 +290,155 @@
 </div>
 <!-- End Breadcrumbs -->
  
+ 
+
+<section class="services section" style=" ">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="section-title" style="padding:0 0; ">
+                    <h2>Equipment Fleet</h2>
+                    <img src="{% static 'img/section-line.png' %}" alt="#">
+                    <p>Explore Our State-of-the-Art Equipment Fleet</p>
+                    <p style="text-align:justify;">
+                        At <b>Sai Land Developers (SLD)</b>, we take pride in offering a versatile range of high-performance equipment designed to meet the rigorous demands of modern industries. From material handling to crushing, our machinery is tailored to enhance productivity, ensure safety, and deliver unmatched efficiency. Each piece in our fleet is maintained to the highest standards, enabling seamless operations for diverse industrial applications.
+                    </p>
+                </div>
+            </div>
+            
+        </div>
+        <div class="row">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 col-12">
+                    <div class="single-service-new" style="border-radius: 30px; position: relative;">
+                        <div class="quantity-circle">15</div>
+                        <img src="{% static 'img/about-img-1.jpg' %}" alt="Loaders">
+                        <h4>Loaders</h4>
+                        <p>Heavy-duty loaders designed for seamless bulk material transfer in industrial applications.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 col-12">
+                    <div class="single-service-new" style="border-radius: 30px;">
+                        <div class="quantity-circle">15</div>
+                        <img src="{% static 'img/about-img-1.jpg' %}" alt="Excavators">
+                        <h4>Excavators</h4>
+                        <p>Precision-engineered excavators for digging, trenching, and heavy lifting in tough terrains.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-12">
+                    <div class="single-service-new" style="border-radius: 30px;">
+                        <div class="quantity-circle">15</div>
+                        <img src="{% static 'img/about-img-1.jpg' %}" alt="Cranes">
+                        <h4>Cranes</h4>
+                        <p>High-capacity cranes for vertical lifting and material placement with maximum efficiency.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-12">
+                    <div class="single-service-new" style="border-radius: 30px;">
+                        <div class="quantity-circle">15</div>
+                        <img src="{% static 'img/about-img-1.jpg' %}" alt="Tippers">
+                        <h4>Tippers</h4>
+                        <p>Reliable tippers for transporting and offloading bulk construction and mining materials.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-12">
+                    <div class="single-service-new" style="border-radius: 30px;">
+                        <div class="quantity-circle">15</div>
+                        <img src="{% static 'img/about-img-1.jpg' %}" alt="Wheel Loaders">
+                        <h4>Wheel Loaders</h4>
+                        <p>Powerful wheel loaders for versatile usage in material movement and heavy-duty tasks.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-12">
+                    <div class="single-service-new" style="border-radius: 30px;">
+                        <div class="quantity-circle">15</div>
+                        <img src="{% static 'img/about-img-1.jpg' %}" alt="Forklifts">
+                        <h4>Forklifts</h4>
+                        <p>Durable forklifts for precise material handling in warehouses and industrial settings.</p>
+                    </div>
+                </div> 
+            </div>
+            
+        </div>
+    </div>
+</section>
+
+
+
+<section class="expertise-section">
+    <div class="container">
+        <div class="section-title">
+            <h2>Our Expertise in Action</h2>
+            <img src="{% static 'img/section-line.png' %}" alt="#">
+            <p>Experience the journey of innovation, quality, and sustainability with Sai Land Developers (SLD).</p>
+        </div>
+
+        <div class="timeline">
+            <!-- Timeline Item 1 -->
+            <div class="timeline-item left">
+                <div class="timeline-content">
+                    <h4>2013: The Beginning</h4>
+                    <p class="text-justify">Sai Land Developers (SLD) was founded, embarking on a mission to transform material handling and transportation with reliability and innovation.</p>
+                </div>
+            </div>
+
+            <!-- Timeline Item 2 -->
+            <div class="timeline-item right">
+                <div class="timeline-content">
+                    <h4>2016: Expanding Horizons</h4>
+                    <p class="text-justify">Introduced advanced crushing units and expanded operations to meet the growing demands of the steel and mining industries.</p>
+                </div>
+            </div>
+
+            <!-- Timeline Item 3 -->
+            <div class="timeline-item left">
+                <div class="timeline-content">
+                    <h4>2020: Sustainability Goals</h4>
+                    <p class="text-justify">Brought India's first electric wheel loader into our fleet, reinforcing our commitment to sustainable operations.</p>
+                </div>
+            </div>
+
+            <!-- Timeline Item 4 -->
+            <div class="timeline-item right">
+                <div class="timeline-content">
+                    <h4>Today: A Trusted Partner</h4>
+                    <p class="text-justify">Continuing to lead with innovation, safety, and customer-focused solutions across multiple industries.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<div class="container"  >
+    <div class="row">
+        <div class="col-lg-12 col-12">
+            <div class="owl-carousel hero-cards-slider"  > 
+                <div class="single-pf bg-light">
+                     <img src="{% static 'img/hero-car-1.jpg' %}" alt=""  style="border-radius:20px; box-shadow:0px 0px 10px; > 
+                </div>  
+                <div class="single-pf bg-light">
+                     <img src="{% static 'img/hero-car-2.jpg' %}" alt=""  style="border-radius:20px; box-shadow:0px 0px 10px; > 
+                </div>  
+                <div class="single-pf bg-light">
+                     <img src="{% static 'img/hero-car-3.jpg' %}" alt=""  style="border-radius:20px; box-shadow:0px 0px 10px;"> 
+                </div>  
+                <div class="single-pf bg-light">
+                     <img src="{% static 'img/hero-car-4.jpg' %}" alt=""  style="border-radius:20px; box-shadow:0px 0px 10px;"> 
+                </div>  
+                <div class="single-pf bg-light">
+                     <img src="{% static 'img/hero-car-5.jpg' %}" alt=""  style="border-radius:20px; box-shadow:0px 0px 10px;"> 
+                </div>  
+                <div class="single-pf bg-light">
+                     <img src="{% static 'img/hero-car-6.jpg' %}" alt=""  style="border-radius:20px; box-shadow:0px 0px 10px;"> 
+                </div>   
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
 {% endblock content %}
