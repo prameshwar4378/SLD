@@ -18,3 +18,9 @@ def crushing_services(request):
 
 def equipment(request):
     return render(request,"equipment.html")
+
+def clients(request):
+    return render(request,"clients.html")
+
+def photo_gallery(request):
+    return render(request,"photo_gallery.html")

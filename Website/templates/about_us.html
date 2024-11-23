@@ -239,6 +239,141 @@
 }
 
 
+
+
+
+
+
+
+
+
+
+
+/* Expertise Section Styling */
+.expertise-section {
+    background-color: #ffefef;
+    padding: 60px 0;
+}
+
+.timeline {
+    position: relative;
+    padding: 40px 0;
+}
+
+.timeline:before {
+    content: '';
+    position: absolute;
+    width: 4px;
+    background-color: #a80000;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.timeline-item {
+    position: relative;
+    width: 50%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.timeline-item.left {
+    left: 0;
+    text-align: right;
+}
+
+.timeline-item.right {
+    left: 50%;
+    text-align: left;
+}
+
+.timeline-item:before {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: #a80000;
+    border-radius: 50%;
+    top: 20px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+}
+
+.timeline-item .timeline-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 2;
+}
+
+.timeline-item.left .timeline-content {
+    transform: translateX(-20%);
+}
+
+.timeline-item.right .timeline-content {
+    transform: translateX(20%);
+}
+
+.timeline-item:hover .timeline-content {
+    background-color: #fda5a5;
+    color: #fff;
+    transform: translateX(0);
+    transition: all 0.5s ease-in-out;
+}
+
+.timeline-item:hover .timeline-content h4,
+p {
+    color: #fff;
+}
+
+.timeline-item h4 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #333;
+    transition: color 0.3s ease;
+}
+
+.timeline-item p {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.6;
+    margin: 0;
+    transition: color 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .timeline:before {
+        left: 20px;
+    }
+
+    .timeline-item {
+        width: 100%;
+        padding-left: 40px;
+    }
+
+    .timeline-item.left {
+        left: 0;
+        text-align: left;
+    }
+
+    .timeline-item.right {
+        left: 0;
+        text-align: left;
+    }
+
+    .timeline-item .timeline-content {
+        transform: none;
+    }
+}
+
+
+
+
+
 </style>
 <!-- Breadcrumbs -->
 <div class="breadcrumbs overlay">
@@ -409,6 +544,64 @@
     </div>
 </section>
 <!-- Why Choose Us Section End -->
+
+
+
+
+
+
+<!-- expertise-section start -->
+
+<section class="expertise-section">
+    <div class="container">
+        <div class="section-title">
+            <h2>Our Expertise in Action</h2>
+            <img src="{% static 'img/section-line.png' %}" alt="#">
+            <p>Experience the journey of innovation, quality, and sustainability with Sai Land Developers (SLD).</p>
+        </div>
+
+        <div class="timeline">
+            <!-- Timeline Item 1 -->
+            <div class="timeline-item left">
+                <div class="timeline-content">
+                    <h4>2013: The Beginning</h4>
+                    <p class="text-justify">Sai Land Developers (SLD) was founded, embarking on a mission to transform
+                        material handling and transportation with reliability and innovation.</p>
+                </div>
+            </div>
+
+            <!-- Timeline Item 2 -->
+            <div class="timeline-item right">
+                <div class="timeline-content">
+                    <h4>2016: Expanding Horizons</h4>
+                    <p class="text-justify">Introduced advanced crushing units and expanded operations to meet the
+                        growing demands of the steel and mining industries.</p>
+                </div>
+            </div>
+
+            <!-- Timeline Item 3 -->
+            <div class="timeline-item left">
+                <div class="timeline-content">
+                    <h4>2020: Sustainability Goals</h4>
+                    <p class="text-justify">Brought India's first electric wheel loader into our fleet, reinforcing our
+                        commitment to sustainable operations.</p>
+                </div>
+            </div>
+
+            <!-- Timeline Item 4 -->
+            <div class="timeline-item right">
+                <div class="timeline-content">
+                    <h4>Today: A Trusted Partner</h4>
+                    <p class="text-justify">Continuing to lead with innovation, safety, and customer-focused solutions
+                        across multiple industries.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- expertise-section End -->
+
+
 
 
 <!-- Team section start -->

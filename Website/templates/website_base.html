@@ -45,6 +45,9 @@
 	<link rel="stylesheet" href="{% static 'css/style.css' %}">
 	<link rel="stylesheet" href="{% static 'css/responsive.css' %}">
 
+	{% block links %}
+{% endblock links %}
+
 </head>
 
 <style>
@@ -110,6 +113,97 @@
         padding: 15px; /* Adds spacing between columns */
     }
 
+
+
+
+
+
+
+
+	
+
+    /* Clients Section Styling */
+    .clients-section {
+        background-color: #f9f9f9;
+        /* Subtle background */
+        padding: 5px 0;
+    }
+
+    .clients-slider .client-logo {
+        text-align: center;
+        /* Center align logos */
+        padding: 15px;
+        margin: 5px;
+        /* Adds space between items */
+        background: #ffffff;
+        /* White background for each logo */
+        border-radius: 10px;
+        /* Smooth border radius */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        /* Subtle shadow */
+        transition: transform 0.3s, box-shadow 0.3s;
+        /* Smooth animation */
+    }
+
+    .clients-slider .client-logo img {
+        max-width: 80%;
+        /* Resizes the logo for consistency */
+        height: auto;
+    }
+
+    .clients-slider .client-logo:hover {
+        transform: scale(1.05);
+        /* Slight zoom on hover */
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        /* Enhanced shadow on hover */
+    }
+
+    /* Carousel Navigation Arrows */
+    .clients-slider .owl-nav button {
+        background: #007bff;
+        /* Bootstrap primary color */
+        color: #ffffff;
+        border-radius: 50%;
+        /* Circular button */
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        /* Shadow for buttons */
+        transition: background 0.3s;
+    }
+
+    .clients-slider .owl-nav button:hover {
+        background: #0056b3;
+        /* Darker shade on hover */
+    }
+
+    .clients-slider .owl-dots {
+        text-align: center;
+        margin-top: 15px;
+    }
+
+    .clients-slider .owl-dot {
+        width: 12px;
+        height: 12px;
+        margin: 0 5px;
+        border-radius: 50%;
+        background: #dcdcdc;
+        /* Inactive dot color */
+        transition: background 0.3s;
+    }
+
+    .clients-slider .owl-dot.active {
+        background: #007bff;
+        /* Active dot color */
+    }
+
+
+{% block style %}
+
+{% endblock style %}
+
 </style>
 <body>
 
@@ -169,7 +263,7 @@
 						<div class="col-lg-2 col-md-2 col-12">
 							<!-- Start Logo -->
 							<div class="logo">
-								<a href="index.html"><img src="{% static 'img/sld-logo.png' %}" alt="#" style="height: 60px;"></a>
+								<a href="{% url "index" %}"><img src="{% static 'img/sld-logo.png' %}" alt="#" style="height: 60px;"></a>
 							</div>
 							<!-- End Logo -->
 							<!-- Mobile Nav -->
@@ -186,13 +280,17 @@
 										<li class=""><a href="#">Services <i class="icofont-rounded-down"></i></a>
 											<ul class="dropdown">
 												<li><a href="{% url "material_handling" %}">Material Handling</a></li>
-												<li><a href="{% url "crushing_services" %}">Crushing Services</a></li>
-												<li><a href="index.html">Transportation</a></li>
-												<li><a href="index.html">Mining & Construction</a></li>
+												<li><a href="{% url "crushing_services" %}">Crushing Services</a></li> 
 											</ul>
 										</li>
 										<li><a href="{% url "equipment" %}">Equipment </a></li>
-										<li><a href="#">Clients  </a></li> 
+										<li><a href="{% url "clients" %}">Clients  </a></li> 
+										<li class=""><a href="#">Gallery <i class="icofont-rounded-down"></i></a>
+											<ul class="dropdown">
+												<li><a href="{% url "photo_gallery" %}">Photos</a></li>
+												<li><a href="">Videos</a></li> 
+											</ul>
+										</li>
  
 									</ul>
 								</nav>

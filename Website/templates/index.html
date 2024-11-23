@@ -1,6 +1,9 @@
 {% extends "website_base.html" %}
 {% load static %}
 {% block content %}
+<style>
+	 
+</style>
   
 	<!-- Slider Area -->
 	<section class="slider">
@@ -69,25 +72,25 @@
 
 	<div class="container" style="position: relative; top: -80px;">
 		<div class="row">
-			<div class="col-lg-12 col-12">
-				<div class="owl-carousel hero-cards-slider" style="background:none; padding:10px;"> 
-					<div class="single-pf bg-light">
-						 <img src="{% static 'img/hero-car-1.jpg' %}" alt=""  style="border-radius:20px; box-shadow:0px 0px 10px; padding:10px;"> 
+			<div class="col-lg-12 col-12 p-3">
+				<div class="owl-carousel hero-cards-slider" style="padding:40px 40px;"> 
+					<div class="single-pf bg-light" style="border-radius:20px; box-shadow:0px 0px 10px;">
+						 <img src="{% static 'img/hero-car-1.jpg' %}" alt=""  style="border-radius:20px; "> 
 					</div>  
-					<div class="single-pf bg-light">
-						 <img src="{% static 'img/hero-car-2.jpg' %}" alt=""  style="border-radius:20px; box-shadow:0px 0px 10px; padding:10px;"> 
+					<div class="single-pf bg-light" style="border-radius:20px; box-shadow:0px 0px 10px;">
+						 <img src="{% static 'img/hero-car-2.jpg' %}" alt=""  style="border-radius:20px; "> 
 					</div>  
-					<div class="single-pf bg-light">
-						 <img src="{% static 'img/hero-car-3.jpg' %}" alt=""  style="border-radius:20px; box-shadow:0px 0px 10px;"> 
+					<div class="single-pf bg-light" style="border-radius:20px; box-shadow:0px 0px 10px;">
+						 <img src="{% static 'img/hero-car-3.jpg' %}" alt=""  style="border-radius:20px; "> 
 					</div>  
-					<div class="single-pf bg-light">
-						 <img src="{% static 'img/hero-car-4.jpg' %}" alt=""  style="border-radius:20px; box-shadow:0px 0px 10px;"> 
+					<div class="single-pf bg-light" style="border-radius:20px; box-shadow:0px 0px 10px;">
+						 <img src="{% static 'img/hero-car-4.jpg' %}" alt=""  style="border-radius:20px; "> 
 					</div>  
-					<div class="single-pf bg-light">
-						 <img src="{% static 'img/hero-car-5.jpg' %}" alt=""  style="border-radius:20px; box-shadow:0px 0px 10px;"> 
+					<div class="single-pf bg-light" style="border-radius:20px; box-shadow:0px 0px 10px;">
+						 <img src="{% static 'img/hero-car-5.jpg' %}" alt=""  style="border-radius:20px; "> 
 					</div>  
-					<div class="single-pf bg-light">
-						 <img src="{% static 'img/hero-car-6.jpg' %}" alt=""  style="border-radius:20px; box-shadow:0px 0px 10px;"> 
+					<div class="single-pf bg-light" style="border-radius:20px; box-shadow:0px 0px 10px;">
+						 <img src="{% static 'img/hero-car-6.jpg' %}" alt=""  style="border-radius:20px; "> 
 					</div>   
 				</div>
 			</div>
@@ -277,8 +280,8 @@
 						<h2>Need Reliable Industrial Support? Call Us at +91 88888888888</h2>
 						<p>We offer tailored solutions in material handling, heavy equipment support, and operational efficiency for your projects.</p>
 						<div class="button">
-							<a href="" class="btn">Contact Now</a>
-							<a href="" class="btn second">Learn More<i class="fa fa-long-arrow-right"></i></a>
+							<a href="{% url "contact_us" %}" class="btn">Contact Now</a>
+							<a href="{% url "equipment" %}" class="btn second">Learn More<i class="fa fa-long-arrow-right"></i></a>
 						</div>
 					</div>
 				</div>
@@ -406,6 +409,52 @@
 	<!--/ End Feautes -->
 
 
+ 
+<section class="clients-section py-5" style="background-color: rgb(253, 236, 236);">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="section-title" style="padding:0 0; margin-bottom: 25px;">
+                    <h2>Our Trusted Clients</h2>
+                    <img src="{% static 'img/section-line.png' %}" alt="#">
+                    <p>We are proud to partner with these industry leaders.</p>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="owl-carousel clients-slider">
+                    <!-- Client Logo 1 -->
+                    <div class="client-logo">
+                        <img src="{% static 'img/logo.png' %}" alt="Client 1" class="img-fluid">
+                    </div>
+                    <div class="client-logo">
+                        <img src="{% static 'img/logo.png' %}" alt="Client 1" class="img-fluid">
+                    </div>
+                    <div class="client-logo">
+                        <img src="{% static 'img/logo.png' %}" alt="Client 1" class="img-fluid">
+                    </div>
+                    <div class="client-logo">
+                        <img src="{% static 'img/logo.png' %}" alt="Client 1" class="img-fluid">
+                    </div>
+                    <div class="client-logo">
+                        <img src="{% static 'img/logo.png' %}" alt="Client 1" class="img-fluid">
+                    </div>
+                    <div class="client-logo">
+                        <img src="{% static 'img/logo.png' %}" alt="Client 1" class="img-fluid">
+                    </div>
+                    <div class="client-logo">
+                        <img src="{% static 'img/logo.png' %}" alt="Client 1" class="img-fluid">
+                    </div>
+                    <!-- Repeat logos as needed -->
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 	 
 
@@ -471,4 +520,7 @@
 		</div>
 	</section>
 	<!-- End Appointment -->
+
+
+
 {% endblock content %}
