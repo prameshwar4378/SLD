@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path,include
 from Website import views as WebView 
 from Website import urls as WebUrls
+from ERP_Admin import urls as ERP_Admin_Urls
 
 from django.conf import settings
 from django.conf.urls.static import static 
@@ -26,5 +27,6 @@ urlpatterns = [
     path('default-admin/', admin.site.urls),
     path('', WebView.index, name="index"), 
     path('web/', include(WebUrls)), 
+    path('api/', include(ERP_Admin_Urls)), 
 
 ]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

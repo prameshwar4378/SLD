@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-tct^rqy$hrxn)w=ej%*(de@fol5=a8qz(xer3(#&3!gxy(_bz8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -38,6 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Website',
+    'ERP_Admin',
+    'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -69,6 +72,18 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'SLD.wsgi.application'
+
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
+
 
 
 # Database
