@@ -39,8 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'Website',
     'ERP_Admin',
+    'ERP_Workshop',
+    'ERP_Account',
     'rest_framework',
     'rest_framework.authtoken',
+    'crispy_bootstrap5',
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -143,6 +147,10 @@ STATIC_ROOT = "/SLD/static/"
 import os
 MEDIA_ROOT =  os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 
 # Default primary key field type
