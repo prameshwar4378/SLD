@@ -21,6 +21,12 @@ def maintenance_logs(request):
 def maintenance_schedule(request):
     return render(request, "workshop_maintenance_schedule.html")
 
+
+def product_list(request):
+    form= ProductForm()
+    product=Product.objects.all().order_by('-id')
+    return render(request, "workshop_product_list.html",{'form':form,'product':product})
+
 def import_products(request):
     if request.method == "POST":
         excel_file = request.FILES.get('product_file')

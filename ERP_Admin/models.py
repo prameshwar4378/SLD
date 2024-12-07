@@ -22,7 +22,6 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return self.username
  
-
 class Vehicle(models.Model):
     vehicle_name = models.CharField(max_length=100)
     vehicle_number = models.CharField(max_length=50, unique=True)
@@ -73,6 +72,7 @@ class Product(models.Model):
     sale_price = models.DecimalField(max_digits=10, decimal_places=2, null=True)  # Use DecimalField for monetary values
     minimum_stock_alert = models.PositiveIntegerField(default=0)
     available_stock = models.PositiveIntegerField(default=0, db_index=True)
+    product_image=models.ImageField(upload_to="Product Images", height_field=None, width_field=None, max_length=500)
     def __str__(self):
         return self.product_name
 

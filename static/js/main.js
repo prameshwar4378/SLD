@@ -116,33 +116,7 @@
 		});
 
 
-		$('.clients-slider').owlCarousel({
-			loop: true,
-			margin: 10,
-			items: 1, // Show only one item at a time
-			stagePadding: 50, // Adjust this value to control the visible portion of adjacent items
-			autoplay: true,
-			smartSpeed: 2500,
-			autoplayTimeout: 50,
-			autoplayHoverPause: true,
-			dots: false,
-			center: false,
-			responsive: {
-				300: {
-					items: 2,
-				},
-				480: {
-					items: 2,
-				},
-				768: {
-					items: 5,
-				},
-				1170: {
-					items: 6,
-				},
-			}
-		});
-
+	 
 
 
 		$('.clients-slider').owlCarousel({
@@ -164,10 +138,10 @@
 					items: 2,
 				},
 				768: {
-					items: 5,
+					items: 3,
 				},
 				1170: {
-					items: 6,
+					items: 3,
 				},
 			}
 		});
