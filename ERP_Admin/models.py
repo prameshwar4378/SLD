@@ -56,3 +56,60 @@ class Technician(models.Model):
     class Meta:
         verbose_name = "Technician"
         verbose_name_plural = "Technicians"
+
+
+ 
+class Model(models.Model):
+    model_name = models.CharField(max_length=50, unique=True, db_index=True) 
+    def __str__(self):
+        return self.model_name
+
+
+class Product(models.Model):
+    product_code = models.CharField(max_length=20, unique=True, db_index=True)
+    product_name = models.CharField(max_length=100, db_index=True)
+    model = models.ForeignKey(Model, related_name='items', null=True, blank=True, on_delete=models.CASCADE)
+    description = models.TextField(null=True, blank=True)
+    sale_price = models.DecimalField(max_digits=10, decimal_places=2, null=True)  # Use DecimalField for monetary values
+    minimum_stock_alert = models.PositiveIntegerField(default=0)
+    available_stock = models.PositiveIntegerField(default=0, db_index=True)
+
+    def __str__(self):
+        return self.product_name
+
+
+class Purchase(models.Model):
+    supplier_name = models.CharField(max_length=100, db_index=True, null=True, blank=True)
+    purchase_date = models.DateTimeField(auto_now_add=True, db_index=True)
+    total_cost = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
+
+    def __str__(self):
+        return f"Purchase #{self.id} on {self.purchase_date}"
+
+
+class PurchaseItem(models.Model):
+    purchase = models.ForeignKey(Purchase, related_name='items', on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, db_index=True)
+    quantity = models.PositiveIntegerField()
+    cost_per_unit = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def save(self, *args, **kwargs):
+        # Update product stock on save
+        if self.pk is None:  # Only add stock if it's a new record
+            self.product.available_stock += self.quantity
+        else:  # If updated, adjust stock accordingly
+            original = PurchaseItem.objects.get(pk=self.pk)
+            self.product.available_stock += self.quantity - original.quantity
+        self.product.save()
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        # Adjust stock on deletion
+        self.product.available_stock -= self.quantity
+        self.product.save()
+        super().delete(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.quantity} of {self.product.product_name} in Purchase #{self.purchase.id}"
+
+
