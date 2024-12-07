@@ -7,27 +7,39 @@ from django.http import JsonResponse
 from django.db.models import Q
 from django.contrib.auth import login as authlogin, authenticate,logout as DeleteSession
 
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login as auth_login
+from django.contrib import messages
 
 def login(request): 
-    if request.method=='POST': 
-        if 'username' in request.POST: 
-            username = request.POST.get('username', False)
-            password = request.POST.get('password', False)
-            user=authenticate(request,username=username,password=password)
-            if user is not None:
-                authlogin(request,user)
-                if user.is_superuser==True: 
-                    return redirect('/developer/dashboard',{'user',user})  
-                elif user.is_admin==True: 
-                    return redirect('/admin/dashboard',{'user',user}) 
-                elif user.is_workshop==True: 
-                    return redirect('/workshop/dashboard',{'user',user})
-                elif user.is_account==True: 
-                    return redirect('/account/dashboard',{'user',user})
-            else:
-                print("User not exist")
-                messages.info(request,'Opps...! User does not exist... Please try again..!')
-    return render(request,'login.html')
+    if request.user.is_authenticated:
+        return redirect_user_based_on_role(request, request.user)
+    
+    if request.method == 'POST': 
+        username = request.POST.get('username', None)
+        password = request.POST.get('password', None)
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            auth_login(request, user)
+            return redirect_user_based_on_role(request, user)
+        else:
+            messages.error(request, 'Oops...! User does not exist. Please try again.')
+    
+    return render(request, 'login.html')
+
+def redirect_user_based_on_role(request, user):
+    """Helper function to redirect users based on their role."""
+    if user.is_superuser:
+        return redirect('/developer/dashboard')
+    elif user.is_admin:
+        return redirect('/admin/dashboard')
+    elif user.is_workshop:
+        return redirect('/workshop/dashboard')
+    elif user.is_account:
+        return redirect('/account/dashboard')
+    else:
+        messages.error(request, 'Unauthorized user role.')
+        return redirect('login')
 
 def logout(request):
     DeleteSession(request)

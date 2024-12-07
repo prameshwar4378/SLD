@@ -73,18 +73,18 @@ class Product(models.Model):
     sale_price = models.DecimalField(max_digits=10, decimal_places=2, null=True)  # Use DecimalField for monetary values
     minimum_stock_alert = models.PositiveIntegerField(default=0)
     available_stock = models.PositiveIntegerField(default=0, db_index=True)
-
     def __str__(self):
         return self.product_name
 
 
 class Purchase(models.Model):
+    bill_no = models.CharField(max_length=50, db_index=True, unique=True, null=False, blank=False)
     supplier_name = models.CharField(max_length=100, db_index=True, null=True, blank=True)
-    purchase_date = models.DateTimeField(auto_now_add=True, db_index=True)
+    bill_date = models.DateTimeField(auto_now_add=False, db_index=True)
     total_cost = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
 
     def __str__(self):
-        return f"Purchase #{self.id} on {self.purchase_date}"
+        return f"Purchase #{self.id} on {self.bill_date}"
 
 
 class PurchaseItem(models.Model):

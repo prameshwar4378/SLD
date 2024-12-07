@@ -133,7 +133,7 @@ USE_TZ = True
 
 LOGIN_URL = '/login'
 
-AUTH_USER_MODEL = 'ERP_Admin.CustomUser'
+# AUTH_USER_MODEL = 'ERP_Admin.CustomUser'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
