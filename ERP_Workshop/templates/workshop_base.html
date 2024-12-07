@@ -14007,13 +14007,12 @@
 
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
                     <li class="dropdown-header">
-                        <h6>{{user.username}}</h6>
-                        <span>CEO</span>
+                        <h6>{{user.first_name}} {{user.last_name}}</h6>
+                        <span>Workshop</span>
                     </li>
                     <li>
                         <hr class="dropdown-divider">
                     </li>
-
                     <li>
                         <a class="dropdown-item d-flex align-items-center" href="#"  data-toggle="modal" data-target="#logout_model">
                             <i class="bi bi-box-arrow-right"></i>
@@ -14094,7 +14093,7 @@
           <h5>Are you sure to Sign Out <b>"{{user.username}}"</b></h5>
         </div>
         <div class="modal-footer">
-          <a href="" class="btn btn-danger px-3 ">Yes</a> &nbsp;
+          <a href="{% url "logout" %}" class="btn btn-danger px-3 ">Yes</a> &nbsp;
           <button  type="button" class="btn btn-secondary bgcolor px-3" data-dismiss="modal">No</button>
         </div>
       </div>

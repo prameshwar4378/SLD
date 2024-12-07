@@ -3,7 +3,35 @@ from .models import *
 from django.contrib import messages
 import openpyxl
 from .forms import *
+from django.http import JsonResponse
+from django.db.models import Q
+from django.contrib.auth import login as authlogin, authenticate,logout as DeleteSession
 
+
+def login(request): 
+    if request.method=='POST': 
+        if 'username' in request.POST: 
+            username = request.POST.get('username', False)
+            password = request.POST.get('password', False)
+            user=authenticate(request,username=username,password=password)
+            if user is not None:
+                authlogin(request,user)
+                if user.is_superuser==True: 
+                    return redirect('/developer/dashboard',{'user',user})  
+                elif user.is_admin==True: 
+                    return redirect('/admin/dashboard',{'user',user}) 
+                elif user.is_workshop==True: 
+                    return redirect('/workshop/dashboard',{'user',user})
+                elif user.is_account==True: 
+                    return redirect('/account/dashboard',{'user',user})
+            else:
+                print("User not exist")
+                messages.info(request,'Opps...! User does not exist... Please try again..!')
+    return render(request,'login.html')
+
+def logout(request):
+    DeleteSession(request)
+    return redirect('/login')
 
 def dashboard(request):
     return render(request, "admin_dashboard.html")
@@ -24,11 +52,66 @@ def report(request):
     return render(request, "admin_report.html")
 
 def user_management(request):
-    return render(request, "admin_user_management.html")
+    form=UserRegistraionForm()
+    users=CustomUser.objects.filter(Q(is_admin=True) | Q(is_workshop=True) | Q(is_account=True))
+    return render(request, "admin_user_management.html",{'form':form,'users':users})
+
+def create_user(request):
+    if request.method == 'POST':
+        form = UserRegistraionForm(request.POST)
+        if form.is_valid():
+            try:
+                form.save()
+                return JsonResponse({'success': True, 'message': 'User created successfully!'})
+            except ValidationError as e:
+                # Handle explicit model-level validation errors
+                return JsonResponse({'success': False, 'errors': {'non_field_errors': str(e)}}, status=400)
+        else:
+            # Handle form errors, including unique constraint violations
+            errors = {
+                field: [str(error) for error in error_list]
+                for field, error_list in form.errors.items()
+            }
+            return JsonResponse({'success': False, 'errors': errors}, status=400)
+    return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=405)
+
+
+
 
 def drivers_list(request):
-    return render(request, "admin_drivers_list.html")
+    drivers=Driver.objects.select_related()
+    form=DriverRegistrationForm()
+    return render(request, "admin_drivers_list.html",{'form':form,'drivers':drivers})
 
+
+def create_driver(request):
+    if request.method == 'POST':
+        form = DriverRegistrationForm(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                form.save()
+                return JsonResponse({'success': True, 'message': 'Driver created successfully!'})
+            except ValidationError as e:
+                # Handle explicit model-level validation errors
+                return JsonResponse({'success': False, 'errors': {'non_field_errors': str(e)}}, status=400)
+        else:
+            # Handle form errors, including unique constraint violations
+            errors = {
+                field: [str(error) for error in error_list]
+                for field, error_list in form.errors.items()
+            }
+            return JsonResponse({'success': False, 'errors': errors}, status=400)
+    return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=405)
+
+def delete_driver(request, id):
+    driver = get_object_or_404(Driver, id=id)
+    if driver:
+        driver.delete()
+        messages.success(request, 'Driver deleted successfully.')
+    return redirect('/admin/drivers-list')
+
+
+# vehical data start
 def vehicle_list(request):
     vehicle = Vehicle.objects.select_related()
     form = VehicleForm()  # Pass the form for vehicle creation
@@ -36,14 +119,24 @@ def vehicle_list(request):
 
 def create_vehicle(request):
     if request.method == 'POST':
-        form = VehicleForm(request.POST)  # Process the form data
+        form = VehicleForm(request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Vehicle created successfully.')
+            try:
+                fm=form.save()
+                messages.success(request,"Vehiccle created successfully!")
+                return JsonResponse({'success': True, 'message': 'Vehiccle created successfully!'})
+            except ValidationError as e:
+                # Handle explicit model-level validation errors
+                return JsonResponse({'success': False, 'errors': {'non_field_errors': str(e)}}, status=400)
         else:
-            messages.error(request, 'Error creating vehicle. Please try again.')
-    return redirect('/admin/vehicle-list')
-
+            # Handle form errors, including unique constraint violations
+            errors = {
+                field: [str(error) for error in error_list]
+                for field, error_list in form.errors.items()
+            }
+            return JsonResponse({'success': False, 'errors': errors}, status=400)
+    return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=405)
+ 
 
 def import_vehicles(request):
     if request.method == "POST":
@@ -81,8 +174,40 @@ def delete_vehicle(request, id):
         messages.success(request, 'Vehicle deleted successfully.')
     return redirect('/admin/vehicle-list')
 
+
+
 def technician_list(request):
-    return render(request, "admin_technician_list.html")
+    technicians=Technician.objects.select_related()
+    form = TechnicianRegistrationForm()
+    return render(request, "admin_technician_list.html",{'form':form,'technicians':technicians})
+
+def create_technician(request):
+    if request.method == 'POST':
+        form = TechnicianRegistrationForm(request.POST)
+        if form.is_valid():
+            try:
+                fm=form.save()
+                messages.success(request,"Technician created successfully!")
+                return JsonResponse({'success': True, 'message': 'Technician created successfully!'})
+            except ValidationError as e:
+                # Handle explicit model-level validation errors
+                return JsonResponse({'success': False, 'errors': {'non_field_errors': str(e)}}, status=400)
+        else:
+            # Handle form errors, including unique constraint violations
+            errors = {
+                field: [str(error) for error in error_list]
+                for field, error_list in form.errors.items()
+            }
+            return JsonResponse({'success': False, 'errors': errors}, status=400)
+    return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=405)
+ 
+def delete_technician(request, id):
+    technician = get_object_or_404(Technician, id=id)
+    if technician:
+        technician.delete()
+        messages.success(request, 'Technician deleted successfully.')
+    return redirect('/admin/technician-list')
+
 
 
 
