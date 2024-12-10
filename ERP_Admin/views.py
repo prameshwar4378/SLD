@@ -11,6 +11,83 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib import messages
 
+
+from django.core.cache import cache
+
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
+from django.forms.models import model_to_dict
+from django.core.cache import cache
+from .models import *
+
+@receiver(post_save, sender=Product)
+def update_cache_on_save(sender, instance, **kwargs):
+    products = [] 
+    for product in Product.objects.select_related('model').all().order_by('-id'):
+        product_data = model_to_dict(product)
+        product_data['model'] = {
+            'model_name': product.model.model_name,   
+        }
+        products.append(product_data)
+    cache.set('cache_products', products, timeout=None)
+
+@receiver(post_delete, sender=Product)
+def update_cache_on_delete(sender, instance, **kwargs):
+    update_cache_on_save(sender, instance)  #  
+
+
+
+
+@receiver(post_save, sender=Driver)
+def update_driver_cache_on_save(sender, instance, **kwargs):
+    # Use select_related to fetch the related CustomUser data in one query
+    drivers = Driver.objects.select_related('user').all().values(
+        'id', 'driver_name', 'license_number', 'phone_number', 'adhaar_number', 'address', 'date_of_birth', 'date_joined',
+        'user__username', 'user__email', 'user__first_name', 'user__last_name'  # Add related fields from CustomUser
+    )
+    # Update the cache with the latest driver data, including CustomUser related fields
+    cache.set('cache_drivers', list(drivers), timeout=None)
+    print("Driver cache updated on save")
+
+@receiver(post_delete, sender=Driver)
+def update_driver_cache_on_delete(sender, instance, **kwargs):
+    # Use select_related to fetch related CustomUser data after a delete
+    drivers = Driver.objects.select_related('user').all().values(
+        'id', 'driver_name', 'license_number', 'phone_number', 'adhaar_number', 'address', 'date_of_birth', 'date_joined',
+        'user__username', 'user__email', 'user__first_name', 'user__last_name'   
+    )
+    # Update the cache to reflect the deletion
+    cache.set('cache_drivers', list(drivers), timeout=None)
+    print("Driver cache updated on delete")
+
+
+
+    
+ 
+@receiver(post_save, sender=Technician)
+def update_technician_cache_on_save(sender, instance, **kwargs):
+    # Retrieve all technicians data and serialize it if needed
+    technicians = Technician.objects.all().values(
+        'id', 'technician_name', 'adhaar_number', 'mobile_number', 'email', 'address', 'date_of_birth', 'date_joined'
+    )
+    # Update cache with the latest technicians data
+    cache.set('cache_technicians', list(technicians), timeout=None)
+    print("Technician cache updated on save")
+
+@receiver(post_delete, sender=Technician)
+def update_technician_cache_on_delete(sender, instance, **kwargs):
+    # Retrieve all technicians data after delete
+    technicians = Technician.objects.all().values(
+        'id', 'technician_name', 'adhaar_number', 'mobile_number', 'email', 'address', 'date_of_birth', 'date_joined'
+    )
+    # Update the cache to reflect the deletion
+    cache.set('cache_technicians', list(technicians), timeout=None)
+    print("Technician cache updated on delete")
+
+
+
+
+
 def login(request): 
     if request.user.is_authenticated:
         return redirect_user_based_on_role(request, request.user)
@@ -91,7 +168,14 @@ def create_user(request):
 
 
 def drivers_list(request):
-    drivers=Driver.objects.select_related()
+    drivers = cache.get('cache_drivers')
+    if not drivers:
+    # If data is not in the cache, retrieve from the database and set the cache
+        drivers = Driver.objects.select_related('user').all().values(
+            'id', 'driver_name', 'license_number', 'phone_number', 'adhaar_number', 'address', 'date_of_birth', 'date_joined',
+            'user__username', 'user__email', 'user__first_name', 'user__last_name'
+        )
+        cache.set('cache_drivers', list(drivers), timeout=None)
     form=DriverRegistrationForm()
     return render(request, "admin_drivers_list.html",{'form':form,'drivers':drivers})
 
@@ -101,6 +185,8 @@ def create_driver(request):
         form = DriverRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
             try:
+                print("Form data is valid")
+                print(form.cleaned_data)
                 form.save()
                 return JsonResponse({'success': True, 'message': 'Driver created successfully!'})
             except ValidationError as e:
@@ -189,7 +275,12 @@ def delete_vehicle(request, id):
 
 
 def technician_list(request):
-    technicians=Technician.objects.select_related()
+    technicians=cache.get('cache_technicians')
+    if not technicians:
+        technicians = Technician.objects.all().values(
+            'id', 'technician_name', 'adhaar_number', 'mobile_number', 'email', 'address', 'date_of_birth', 'date_joined'
+        )
+        cache.set('cache_technicians', list(technicians), timeout=None)
     form = TechnicianRegistrationForm()
     return render(request, "admin_technician_list.html",{'form':form,'technicians':technicians})
 

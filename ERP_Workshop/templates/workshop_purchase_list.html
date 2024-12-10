@@ -35,32 +35,30 @@
     }
 </style>
 <main id="main" class="main">
-
-    <div class="pagetitle">
-        <h1>Purchase List</h1>
-        <nav>
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item"><a href="#">Purchase List </a></li>
-            </ol>
-        </nav>
-        <section class="section dashboard">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="row">
-                        <div class="container" style="max-width:97%;">
-                            <div class="text-lg-end text-start">
-                                <!-- Use text-lg-end for right alignment in large screens -->
-                                <a href="#" class="btn btn-primary" data-toggle="modal"
-                                    data-target="#model_create_purchase"><i class="mdi mdi-filter"></i> Add New Stock</a>
- 
-                            </div>
-                        </div>
-                    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="pagetitle">
+                <h1>Purchase List</h1>
+                <nav>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item"><a href="#">Purchase List </a></li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="container" style="max-width:97%;">
+                <div class="text-lg-end text-start">
+                    <!-- Use text-lg-end for right alignment in large screens -->
+                    <a href="#" class="btn btn-primary" data-toggle="modal"
+                        data-target="#model_create_purchase"><i class="mdi mdi-filter"></i> New Bill</a>
                 </div>
             </div>
+        </div>
+    </div>
+        <section class="section dashboard">
             <hr>
- 
             <div class="row">
                 <!-- Left side columns -->
                 <div class="col-lg-12">
@@ -72,6 +70,7 @@
                                     <tr style="background:#9c4b2e;">
                                         <th scope="col" class="text-center text-white" style="">Sr.No</th>
                                         <th scope="col" class="text-center text-white" style="">Bill Number</th>
+                                        <th scope="col" class="text-center text-white" style="">Bill Type</th>
                                         <th scope="col" class="text-center text-white" style="">Supplier Name</th>
                                         <th scope="col" class="text-center text-white" style="">Billing Date</th>
                                         <th scope="col" class="text-center text-white" style="">Total Cost</th>
@@ -84,15 +83,20 @@
                                     <tr>
                                         <td>{{forloop.counter}}</td>
                                         <td>{{r.bill_no}}</td>
+                                        <td>{{r.bill_type}}</td>
                                         <td>{{r.supplier_name}}</td>
                                         <td>{{r.bill_date}}</td>
                                         <td>{{r.total_cost}}</td>
                                         <td>
                                             <center>
-                                                <a href=" "
-                                                    class="btn btn-warning px-3">Update</a>
-                                                <a href=" "
-                                                    class="btn btn-danger px-3">Delete</a>
+                                                 
+ 
+                                                <a href="javascript:void(0);" data-url="{% url 'workshop_purchase_item_list' r.id %}" class="btn btn-primary px-2 py-2" onclick="mini_window(this)">Manage</a>
+
+                                                        <a href=" " class="btn btn-warning px-2 py-2"><i class="bi bi-pencil-square"></i></a>
+
+                                                            <a href="{% url "workshop_delete_purchase" r.id %} "
+                                                                class="btn btn-danger px-2 py-2"><i class="bi bi-trash3"></i></a>
                                             </center>
                                         </td>
                                     </tr>
@@ -187,49 +191,22 @@
 </div>
 
 
-
 <script>
-    $(document).ready(function () {
-        $('#purchase').DataTable({
-            "scrollX": true // If you want horizontal scrolling
-        });
-    });
+    function mini_window(element) { 
+        const url = element.dataset.url;
+        var screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        var screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+        var newWidth = screenWidth * 0.9;  // 90% of the screen width
+        var newHeight = screenHeight * 0.9;  // 90% of the screen height
+        var left = (screenWidth - newWidth) / 2;
+        var top = (screenHeight - newHeight) / 2;
+        var windowFeatures = `width=${newWidth},height=${newHeight},scrollbars=yes,resizable=yes,top=${top},left=${left}`;
+        var newWindow = window.open(url, "miniWindow", windowFeatures);
+        newWindow.onload = function() {
+            newWindow.location.replace(url);
+        };
+    }
 </script>
 
-<script>
-document.getElementById('createPurchaseForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-    const form = e.target;
-    const formData = new FormData(form);
-    const errorAlert = document.getElementById('createPurchaseError');
-    
-    fetch(form.action, {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-        },
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert(data.message); // Show success alert
-            location.reload();   // Refresh the page or update the list dynamically
-        } else {
-            let errorMessage = '<strong>Error:</strong><br>';
-            for (const [field, errors] of Object.entries(data.errors)) {
-                errorMessage += `${field}: ${errors.join(', ')}<br>`;
-            }
-            errorAlert.innerHTML = errorMessage;
-            errorAlert.classList.remove('d-none');
-        }
-    })
-    .catch(error => {
-        errorAlert.innerHTML = '<strong>An unexpected error occurred. Please try again later.</strong>';
-        errorAlert.classList.remove('d-none');
-    });
-});
-
-</script>
-
+ 
 {% endblock content %}

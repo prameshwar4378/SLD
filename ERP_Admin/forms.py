@@ -33,11 +33,15 @@ class VehicleForm(forms.ModelForm):
             raise ValidationError("This Vehicle number is already registered.")
         return vehicle_number
 
+
 class DriverRegistrationForm(UserCreationForm):
     driver_name = forms.CharField(max_length=20, required=True, label="Driver Name")
     adhaar_number = forms.CharField(max_length=20, required=True, label="Aadhaar Number", widget=forms.TextInput(attrs={'oninput': 'generate_username()',}))
     license_number = forms.CharField(max_length=20, required=True, label="License Number")
     phone_number = forms.CharField(max_length=15, required=True, label="Phone Number")
+    adhaar_card_photo=forms.FileField(required=False, label="Upload Adhaar Card")
+    driving_license_photo=forms.FileField(required=False, label="Upload Driving License")
+    profile_photo=forms.FileField(required=False, label="Upload Profile Photo")
     address = forms.CharField(widget=forms.Textarea, required=False, label="Address")
     date_of_birth = forms.DateField(
         widget=forms.DateInput(attrs={'type': 'date'}),
@@ -95,6 +99,9 @@ class DriverRegistrationForm(UserCreationForm):
                 address=self.cleaned_data.get('address'),
                 date_of_birth=self.cleaned_data.get('date_of_birth'),
                 date_joined=self.cleaned_data.get('date_joined'),
+                adhaar_card_photo=self.cleaned_data.get('adhaar_card_photo'),
+                driving_license_photo=self.cleaned_data.get('driving_license_photo'),
+                profile_photo=self.cleaned_data.get('profile_photo')
             )
         return user
     
@@ -102,39 +109,38 @@ class DriverRegistrationForm(UserCreationForm):
 
 
 class TechnicianRegistrationForm(forms.ModelForm):
+    
+    adhaar_card=forms.FileField(required=False, label="Upload Adhaar Card")
+    profile_photo=forms.FileField(required=False, label="Upload Profile Photo")
+    additional_docs=forms.FileField(required=False, label="Upload Additional Document")
+
     technician_name = forms.CharField(
         max_length=100, 
         required=True, 
         label="Technician Name",
-        widget=forms.TextInput(attrs={'placeholder': 'Enter technician name'})
-    )
+            )
     adhaar_number = forms.CharField(
         max_length=12, 
         required=True, 
         label="Aadhaar Number", 
-        widget=forms.TextInput(attrs={'placeholder': 'Enter 12-digit Aadhaar number'})
-    )
+            )
     mobile_number = forms.CharField(
         max_length=10, 
         required=True, 
         label="Mobile Number", 
-        widget=forms.TextInput(attrs={'placeholder': 'Enter 10-digit mobile number'})
-    )
+            )
     email = forms.EmailField(
         required=False, 
         label="Email Address", 
-        widget=forms.EmailInput(attrs={'placeholder': 'Enter email address (optional)'})
-    )
+            )
     address = forms.CharField(
         required=False, 
         label="Address", 
-        widget=forms.Textarea(attrs={'placeholder': 'Enter address (optional)', 'rows': 3})
-    )
+            )
     date_of_birth = forms.DateField(
         required=False, 
         label="Date of Birth", 
-        widget=forms.DateInput(attrs={'type': 'date', 'placeholder': 'Select date of birth'})
-    )
+            )
 
     class Meta:
         model = Technician

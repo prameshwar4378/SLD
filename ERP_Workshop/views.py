@@ -1,11 +1,10 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from .forms import *
 from django.http import JsonResponse
-from ERP_Admin.models import Product,Model
+from ERP_Admin.models import Product,Model,Purchase
 import openpyxl
 from django.contrib import messages
-
-
+from django.core.cache import cache
 def dashboard(request):
     return render(request, "workshop_dashboard.html")
 
@@ -21,11 +20,34 @@ def maintenance_logs(request):
 def maintenance_schedule(request):
     return render(request, "workshop_maintenance_schedule.html")
 
-
 def product_list(request):
-    form= ProductForm()
-    product=Product.objects.all().order_by('-id')
-    return render(request, "workshop_product_list.html",{'form':form,'product':product})
+    form = ProductForm()
+    products = cache.get('cache_products')
+    if not products: 
+        products = list(Product.objects.all().order_by('-id').values())
+        cache.set('cache_products', products, timeout=None)
+    return render(request, "workshop_product_list.html", {'form': form, 'product': products})
+
+
+def create_product(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST,request.FILES)
+        if form.is_valid():
+            try:
+                form.save()
+                return JsonResponse({'success': True, 'message': 'Product created successfully!'})
+            except ValidationError as e:
+                # Handle explicit model-level validation errors
+                return JsonResponse({'success': False, 'errors': {'non_field_errors': str(e)}}, status=400)
+        else:
+            # Handle form errors, including unique constraint violations
+            errors = {
+                field: [str(error) for error in error_list]
+                for field, error_list in form.errors.items()
+            }
+            return JsonResponse({'success': False, 'errors': errors}, status=400)
+    return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=405)
+
 
 def import_products(request):
     if request.method == "POST":
@@ -51,8 +73,7 @@ def import_products(request):
                     # Check if the product_code already exists
                     if Product.objects.filter(product_code=product_code).exists():
                         messages.error(request, f"Product with code {product_code} already exists")
-                        continue
-
+                        return redirect('/workshop/product-list')
                     # Retrieve or create the model instance
                     if model_name not in model_cache:
                         model_instance, created = Model.objects.get_or_create(model_name=model_name)
@@ -82,8 +103,15 @@ def import_products(request):
         else:
             messages.error(request, 'No file selected.')
 
-        return redirect('/admin/product-list')
-    return redirect('/admin/product-list')
+        return redirect('/workshop/product-list')
+    return redirect('/workshop/product-list')
+
+def delete_product(request, id):
+    product = get_object_or_404(Product, id=id)
+    if product:
+        product.delete()
+        messages.success(request, 'Product deleted successfully.')
+    return redirect('/workshop/product-list')
 
 
 def purchase_list(request):
@@ -97,7 +125,8 @@ def create_purchase(request):
         if form.is_valid():
             try:
                 form.save()
-                return JsonResponse({'success': True, 'message': 'Purchase created successfully!'})
+                messages.success(request,"Purchase created successfully!")
+                return redirect('/workshop/purchase-list/')
             except ValidationError as e:
                 # Handle explicit model-level validation errors
                 return JsonResponse({'success': False, 'errors': {'non_field_errors': str(e)}}, status=400)
@@ -109,6 +138,21 @@ def create_purchase(request):
             }
             return JsonResponse({'success': False, 'errors': errors}, status=400)
     return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=405)
+
+def delete_purchase(request, id):
+    purchase = get_object_or_404(Purchase, id=id)
+    if purchase:
+        purchase.delete()
+        messages.success(request, 'Bill deleted successfully.')
+    return redirect('/workshop/purchase-list')
+
+def purchase_item_list(request,id):
+    purchase=get_object_or_404(Purchase, id=id)
+    item=PurchaseItem.objects.all().order_by('-id')
+    product_data = list(Product.objects.select_related('model'))
+    cache.set('product_data', product_data, timeout=300)  # Store for 300 seconds
+    product_data = cache.get('product_data')
+    return render(request, "workshop_purchase_item_list.html",{'item':item,'purchase':purchase,'product_data':product_data})
 
 def reports(request):
     return render(request, "workshop_reports.html")

@@ -37,6 +37,9 @@ class Driver(models.Model):
     address = models.TextField(null=True, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
     date_joined = models.DateField(auto_now_add=False)
+    adhaar_card_photo=models.FileField(upload_to="Documents", max_length=None, null=True, blank=True)
+    driving_license_photo=models.FileField(upload_to="Documents", max_length=None, null=True, blank=True)
+    profile_photo=models.FileField(upload_to="Documents", max_length=None, null=True, blank=True)
     def __str__(self):
         return f"{self.driver_name} - {self.user.username}"
     
@@ -47,8 +50,10 @@ class Technician(models.Model):
     email = models.EmailField(max_length=100, unique=True, null=True, blank=True, verbose_name="Email Address")
     address = models.TextField(null=True, blank=True, verbose_name="Address")
     date_of_birth = models.DateField(null=True, blank=True, verbose_name="Date of Birth")
-    date_joined = models.DateField(auto_now_add=True, verbose_name="Date Joined")
-
+    date_joined = models.DateField(auto_now_add=True, verbose_name="Date Joined") 
+    adhaar_card_photo=models.FileField(upload_to="Documents", max_length=None, null=True, blank=True)
+    profile_photo=models.FileField(upload_to="Documents", max_length=None, null=True, blank=True)
+    other_docs=models.FileField(upload_to="Documents", max_length=None, null=True, blank=True)
     def __str__(self):
         return f"{self.technician_name}"
 
@@ -71,20 +76,24 @@ class Product(models.Model):
     description = models.TextField(null=True, blank=True)
     sale_price = models.DecimalField(max_digits=10, decimal_places=2, null=True)  # Use DecimalField for monetary values
     minimum_stock_alert = models.PositiveIntegerField(default=0)
-    available_stock = models.PositiveIntegerField(default=0, db_index=True)
-    product_image=models.ImageField(upload_to="Product Images", height_field=None, width_field=None, max_length=500)
+    available_stock = models.PositiveIntegerField(default=0, db_index=True, null=True, blank=True)
+    product_image=models.ImageField(upload_to="Product Images", height_field=None, width_field=None, max_length=500, null=True, blank=True)
     def __str__(self):
         return self.product_name
 
-
+PURCHASE_GST=(
+    ('GST BILL','GST BILL'),
+    ('Without GST BILL','Without GST BILL')
+)
 class Purchase(models.Model):
     bill_no = models.CharField(max_length=50, db_index=True, unique=True, null=False, blank=False)
     supplier_name = models.CharField(max_length=100, db_index=True, null=True, blank=True)
-    bill_date = models.DateTimeField(auto_now_add=False, db_index=True)
+    bill_type = models.CharField(max_length=30, db_index=True, choices=PURCHASE_GST)
+    bill_date = models.DateField(auto_now_add=False, db_index=True)
     total_cost = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
-
+    bill_file = models.FileField(upload_to="Purchase Bill", null=True, blank=True)
     def __str__(self):
-        return f"Purchase #{self.id} on {self.bill_date}"
+        return f"Purchase #{self.bill_no} on {self.bill_date}"
 
 
 class PurchaseItem(models.Model):
@@ -92,6 +101,7 @@ class PurchaseItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, db_index=True)
     quantity = models.PositiveIntegerField()
     cost_per_unit = models.DecimalField(max_digits=10, decimal_places=2)
+    total_amount = models.IntegerField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
         # Update product stock on save

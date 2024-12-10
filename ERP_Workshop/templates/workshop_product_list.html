@@ -33,33 +33,46 @@
     .dropdown:hover .dropdown-content {
         display: block;
     }
+
+
+
+     
+
 </style>
 <main id="main" class="main">
 
-    <div class="pagetitle">
-        <h1>Product List</h1>
-        <nav>
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item"><a href="#">Product List </a></li>
-            </ol>
-        </nav>
-        <section class="section dashboard">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="pagetitle">
+                    <h1>Product List</h1>
+                    <nav>
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="#">Home</a></li>
+                            <li class="breadcrumb-item"><a href="#">Product List </a></li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="container" style="max-width:97%;">
+                    <div class="text-lg-end text-start">
+                        <!-- Use text-lg-end for right alignment in large screens -->
+                        <a href="#" class="btn btn-primary" data-toggle="modal"
+                            data-target="#model_create_product"><i class="mdi mdi-filter"></i> Add Product</a>
 
+                        <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#model_import_product"><i class="mdi mdi-filter"></i> Import
+                            Product</a>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section class="section dashboard">
             <div class="row">
                 <div class="col-lg-12">
                     <div class="row">
-                        <div class="container" style="max-width:97%;">
-                            <div class="text-lg-end text-start">
-                                <!-- Use text-lg-end for right alignment in large screens -->
-                                <a href="#" class="btn btn-primary" data-toggle="modal"
-                                    data-target="#model_create_product"><i class="mdi mdi-filter"></i> Add Product</a>
-
-                                <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#model_import_product"><i class="mdi mdi-filter"></i> Import
-                                    Product</a>
-
-                            </div>
-                        </div>
+                        
                     </div>
                 </div>
             </div>
@@ -72,7 +85,6 @@
                 <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-  
             <div class="row">
                 <!-- Left side columns -->
                 <div class="col-lg-12">
@@ -83,8 +95,10 @@
                                 <thead>
                                     <tr style="background:#9c4b2e;">
                                         <th scope="col" class="text-center text-white" style="">Sr.No</th>
-                                        <th scope="col" class="text-center text-white" style="">Product Number</th>
+                                        <th scope="col" class="text-center text-white" style="">Product Code</th>
                                         <th scope="col" class="text-center text-white" style="">Product Name</th>
+                                        <th scope="col" class="text-center text-white" style="">Model</th>
+                                        <th scope="col" class="text-center text-white" style="">Available Stock</th>
                                         <th scope="col" class="text-center text-white" style="">Action</th>
                                     </tr>
                                 </thead>
@@ -92,14 +106,24 @@
                                     {% if product %}
                                     {% for r in product %}
                                     <tr>
-                                        <td>{{forloop.counter}}</td>
-                                        <td>{{r.product_code}}</td>
-                                        <td>{{r.product_image}}</td>
+                                        <td class="text-center">{{forloop.counter}}</td>
+                                        <td class="text-left">{{r.product_code}}</td>
+                                        <td class="text-left">{{r.product_name}}</td>
+                                        <td class="text-left">{{r.model.model_name}}</td>
+                                        <td class="text-center">
+                                            {% if r.available_stock == r.minimum_stock_alert %}
+                                            <span class="badge bg-warning">{{r.available_stock}}</span>
+                                            {% elif r.available_stock < r.minimum_stock_alert %}
+                                            <span class="badge bg-danger">{{r.available_stock}}</span>
+                                            {% else %}
+                                            <span class="badge bg-success">{{r.available_stock}}</span>
+                                            {% endif %}
+                                        </td>
                                         <td>
                                             <center>
                                                 <a href=" "
                                                     class="btn btn-warning px-3">Update</a>
-                                                <a href="{% url 'admin_delete_product' r.id %}"
+                                                <a href="{% url 'workshop_delete_product' r.id %}"
                                                     class="btn btn-danger px-3">Delete</a>
                                             </center>
                                         </td>
@@ -114,7 +138,7 @@
                 </div>
             </div><!-- End Left side columns -->
         </section>
-
+ 
 </main><!-- End #main -->
 
 
@@ -130,14 +154,15 @@
             </div>
             <div class="modal-body text-left">
                 <div class="alert alert-danger d-none" id="createVehicleError"></div>
-                <form id="createVehicleForm" method="POST" enctype="multipart/form-data" action=" ">
+                <form id="createVehicleForm" method="POST" enctype="multipart/form-data" action="{% url 'workshop_create_product' %}">
                     {% csrf_token %}
                     <div class="row">
-                        <div class="col-sm-6">
+                         <div class="col-sm-6">
                             {{ form.product_code|as_crispy_field }}
                         </div>
-                        <div class="col-sm-6">
-                            {{ form.model|as_crispy_field }}
+                        <div class="col-sm-6"> 
+                            <label for="id_model" class="mb-2">Model</label>
+                            {{ form.model }}
                         </div>
                         <div class="col-sm-12">
                             {{ form.product_name|as_crispy_field }}
@@ -156,7 +181,7 @@
                         </div>
                         <div class="col-sm-6">
                             {{ form.product_image|as_crispy_field }}
-                        </div>
+                        </div> 
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary bgcolor px-3" data-dismiss="modal">Close</button>
@@ -186,9 +211,8 @@
                     <strong>Note:</strong> Please upload a file in CSV or Excel format containing product data. <a href="#"  data-toggle="modal" data-target="#model_data_formate">Data Formate</a>
                 </div>
                   <!-- Form for file upload -->
-                <form method="POST" enctype="multipart/form-data" action="">
+                <form method="POST" enctype="multipart/form-data" action="{% url 'workshop_import_products' %}">
                     {% csrf_token %}
-                    
                     <div class="form-group">
                         <label for="productFile" class="control-label">Select Product Import File</label>
                         <input type="file" class="form-control" id="productFile" name="product_file" accept=".csv, .xlsx, .xls" required>
@@ -221,6 +245,9 @@
                         <tr>
                             <th scope="col" class="text-center">Product Number</th>
                             <th scope="col" class="text-center">Product Name</th>
+                            <th scope="col" class="text-center">Model Name</th>
+                            <th scope="col" class="text-center">Sale Price</th>
+                            <th scope="col" class="text-center">Available Stock</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -228,21 +255,41 @@
                         <tr>
                             <td class="text-center">ABC-123</td>
                             <td class="text-center">Toyota Corolla</td>
+                            <td class="text-center">Sedan</td>
+                            <td class="text-center">$20,000</td>
+                            <td class="text-center">25</td>
                         </tr>
                         <tr>
                             <td class="text-center">XYZ-456</td>
                             <td class="text-center">Honda Civic</td>
+                            <td class="text-center">Coupe</td>
+                            <td class="text-center">$22,500</td>
+                            <td class="text-center">18</td>
                         </tr>  
                         <tr>
                             <td class="text-center">PQR-012</td>
                             <td class="text-center">Chevrolet Malibu</td>
+                            <td class="text-center">Sedan</td>
+                            <td class="text-center">$24,000</td>
+                            <td class="text-center">30</td>
                         </tr>
                         <tr>
                             <td class="text-center">DEF-345</td>
                             <td class="text-center">Nissan Altima</td>
+                            <td class="text-center">Sedan</td>
+                            <td class="text-center">$23,000</td>
+                            <td class="text-center">20</td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">GHI-789</td>
+                            <td class="text-center">Ford Focus</td>
+                            <td class="text-center">Hatchback</td>
+                            <td class="text-center">$19,500</td>
+                            <td class="text-center">15</td>
                         </tr>
                     </tbody>
-                </table> 
+                </table>
+                
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary bgcolor px-3" data-dismiss="modal">Close</button>
                     </div>
@@ -251,13 +298,11 @@
     </div>
 </div>
 
+
 <script>
-    $(document).ready(function() {
-        $('.searchable-dropdown').select2({
-            placeholder: "Select a supplier",
-            allowClear: true
-        });
-    });
+ $(function(){
+  $("#id_model").selectize();
+ }); 
 </script>
 
 <script>
@@ -303,5 +348,7 @@ document.getElementById('createVehicleForm').addEventListener('submit', function
 });
 
 </script>
+
+ 
 
 {% endblock content %}

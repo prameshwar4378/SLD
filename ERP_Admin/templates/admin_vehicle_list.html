@@ -35,34 +35,35 @@
     }
 </style>
 <main id="main" class="main">
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="pagetitle">
+                <h1>Vehicle List</h1>
+                <nav>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item"><a href="#">Vehicle List </a></li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="container" style="max-width:97%;">
+                <div class="text-lg-end text-start">
+                    <!-- Use text-lg-end for right alignment in large screens -->
+                    <a href="#" class="btn btn-primary" data-toggle="modal"
+                        data-target="#model_create_vehicle"><i class="mdi mdi-filter"></i> Add Vehicle</a>
 
-    <div class="pagetitle">
-        <h1>Vehicle List</h1>
-        <nav>
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item"><a href="#">Vehicle List </a></li>
-            </ol>
-        </nav>
-        <section class="section dashboard">
+                    <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#model_import_vehicle"><i class="mdi mdi-filter"></i> Import
+                        Vehicle</a>
 
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="row">
-                        <div class="container" style="max-width:97%;">
-                            <div class="text-lg-end text-start">
-                                <!-- Use text-lg-end for right alignment in large screens -->
-                                <a href="#" class="btn btn-primary" data-toggle="modal"
-                                    data-target="#model_create_vehicle"><i class="mdi mdi-filter"></i> Add Vehicle</a>
-
-                                <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#model_import_vehicle"><i class="mdi mdi-filter"></i> Import
-                                    Vehicle</a>
-
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    
+    <section class="section dashboard">
             <hr>
 
             <!-- Danger Alert -->
@@ -114,7 +115,7 @@
                     </div>
                 </div>
             </div><!-- End Left side columns -->
-        </section>
+    </section>
 
 </main><!-- End #main -->
 

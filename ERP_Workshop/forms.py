@@ -1,11 +1,12 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from ERP_Admin.models import Purchase, PurchaseItem,Product
+from ERP_Admin.models import Purchase, PurchaseItem,Product,Model
 
 class PurchaseForm(forms.ModelForm):
     class Meta:
         model = Purchase
-        fields = ['bill_no','bill_date', 'supplier_name', 'total_cost']
+            
+        fields = ['bill_no','bill_date','bill_type', 'supplier_name', 'total_cost','bill_file']
         widgets={ 
             'bill_date': forms.TextInput(attrs={'type': 'date' })
         }
@@ -42,8 +43,8 @@ class ProductForm(forms.ModelForm):
         model = Product
         fields = [
             'product_code',
-            'product_name',
             'model',
+            'product_name',
             'description',
             'sale_price',
             'minimum_stock_alert',
@@ -52,7 +53,6 @@ class ProductForm(forms.ModelForm):
         ]
         widgets = {
             'description': forms.Textarea(attrs={'rows': 4, 'cols': 40}),
-            'model': forms.Select(attrs={'class': 'searchable-dropdown'}),
         }
 
     def clean_product_code(self):
@@ -90,7 +90,7 @@ class ProductForm(forms.ModelForm):
         if available_stock < 0:
             raise ValidationError("Available stock cannot be negative.")
         return available_stock
-
+    
     def clean_product_image(self):
         product_image = self.cleaned_data.get('product_image')
         if product_image:
@@ -101,3 +101,15 @@ class ProductForm(forms.ModelForm):
             if not product_image.content_type.startswith('image/'):
                 raise ValidationError("Uploaded file is not a valid image.")
         return product_image
+
+
+class PurchaseItemForm(forms.ModelForm):
+    class Meta:
+        model = PurchaseItem
+        fields = ['product', 'quantity', 'cost_per_unit', 'total_amount']
+        widgets = {
+            'product': forms.Select(attrs={'class': 'form-control'}),
+            'quantity': forms.NumberInput(attrs={'class': 'form-control', 'min': '1'}),
+            'cost_per_unit': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'total_amount': forms.NumberInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+        }

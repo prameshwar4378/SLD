@@ -1,0 +1,257 @@
+{% extends "base_window.html" %}
+{% block title %}Purchase Item{% endblock title %}
+{% load crispy_forms_tags %}
+{% block content %}
+<style>
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 100px;
+        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+        border-radius: 10px;
+    }
+
+    .dropdown-content a {
+        color: black;
+        padding: 5px 10px;
+        text-decoration: none;
+        display: block;
+        text-align: left;
+    }
+
+    .dropdown-content a:hover {
+        background-color: #f1f1f1;
+    }
+
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+
+
+
+    .bill-info-header {
+        background-color: #f9f9f9;
+        border-radius: 12px;
+        box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin-top: 20px;
+    }
+
+    .info-field {
+        background-color: #f1f1f1;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        font-size: 1rem;
+        color: #555;
+        width: 100%;
+        text-align: left;
+    }
+
+    .info-field strong {
+        color: #333;
+        margin-bottom: 5px;
+    }
+
+    .col-sm-3 {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .col-sm-4 {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    @media (max-width: 768px) {
+
+        .col-sm-3,
+        .col-sm-4 {
+            margin-bottom: 15px;
+        }
+    }
+
+
+    .form-header {
+        background-color: #f9f9f9;
+        border-radius: 12px;
+        box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin-top: 20px;
+    }
+</style>
+<main id="main" class="main">
+
+
+    <section class="section dashboard">
+
+        <div class="container-fluid mb-3 bill-info-header">
+            <div class="row">
+                <!-- Bill No -->
+                <div class="col-sm-4 mb-2">
+                    <div class="info-field">
+                        <strong>Bill No:</strong> {{ purchase.bill_no }}
+                    </div>
+                </div>
+
+                <!-- Supplier Name -->
+                <div class="col-sm-8 mb-2">
+                    <div class="info-field">
+                        <strong>Supplier Name:</strong> {{ purchase.supplier_name }}
+                    </div>
+                </div>
+
+                <!-- Bill Type -->
+                <div class="col-sm-4 mb-2">
+                    <div class="info-field">
+                        <strong>Bill Type:</strong> {{ purchase.bill_type }}
+                    </div>
+                </div>
+
+                <!-- Bill Date -->
+                <div class="col-sm-4 mb-2">
+                    <div class="info-field">
+                        <strong>Bill Date:</strong> {{ purchase.bill_date }}
+                    </div>
+                </div>
+
+                <!-- Total Cost -->
+                <div class="col-sm-4 mb-2">
+                    <div class="info-field">
+                        <strong>Total Cost:</strong> {{ purchase.total_cost }}
+                    </div>
+                </div>
+
+                <!-- Bill File -->
+
+            </div>
+        </div>
+
+        <div class="container-fluid mb-3 form-header">
+            <div class="row">
+                <div class="col-sm-9">
+
+                    <form action="#" method="get" class="position-relative">
+                        <!-- <input type="text" class="form-control rounded-pill shadow-sm p-3"
+                            placeholder="Search Product ......" list="suggestions"
+                            style="border: 1px solid #ccc; font-size: 1rem;" /> -->
+                        <select name="search_product" id="search_product" class="form-control rounded-pill shadow-sm p-3" style="border: 1px solid #ccc; font-size: 1rem;" >
+                            <option value="">Search Product....</option>
+                                {% for r in product_data %}
+                                <option value="{{r.product_name}}">{{r.product_name}}</option>
+                                {% endfor %}
+                        </select>
+                        <button type="submit" class="btn btn-primary rounded-circle position-absolute"
+                            style="top: 50%; right: 10px; transform: translateY(-50%); height: 43px;">
+                            🔍
+                        </button>
+                    </form>
+
+                    <div class="row g-3 mt-2">
+
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" placeholder="Product Code" readonly
+                                style="border: 1px solid #ccc; font-size: 1rem;" />
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control" placeholder="Product Name" readonly
+                                style="border: 1px solid #ccc; font-size: 1rem;" />
+                        </div>
+
+                        <!-- Rate, Quantity, Total Amount (Single Row) -->
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" placeholder="Rate"
+                                style="border: 1px solid #ccc; font-size: 1rem;" />
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" placeholder="Quantity"
+                                style="border: 1px solid #ccc; font-size: 1rem;" />
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" placeholder="Total Amount"
+                                style="border: 1px solid #ccc; font-size: 1rem;" />
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+
+                <div class="col-sm-3">
+
+                </div>
+            </div>
+        </div>
+
+        <div class="container mt-3" style=" overflow:scroll;">
+            <table id="example" class="table table-striped "
+                style="overflow:scroll; width:100%;min-width: max-content;">
+                <thead class="bg-danger">
+                    <tr class="bg-gradient-primary text-light ">
+                        <th scope="col" class="text-center text-white" style="">Sr.No</th>
+                        <th scope="col" class="text-center text-white" style="">Product Code</th>
+                        <th scope="col" class="text-center text-white" style="">Product Name</th>
+                        <th scope="col" class="text-center text-white" style="">Quantity</th>
+                        <th scope="col" class="text-center text-white" style="">Rate</th>
+                        <th scope="col" class="text-center text-white" style="">Total Amount</th>
+                        <th scope="col" class="text-center text-white" style="">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="invoice_table_body">
+                    {% if item %}
+                    {% for r in item %}
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td>{{r.product_code}}</td>
+                        <td class="text-center">{{r.product_name}}</td>
+                        <td class="text-center">{{r.quantity}}</td>
+                        <td class="text-center">{{r.rate}}</td>
+                        <td class="text-center">&#8377; {{r.total_amount}}.00</td>
+                        <td>
+                            <center>
+                                <a href="" class="btn btn-danger px-3"><i class="mdi mdi-delete"></i></a>
+                            </center>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td class="text-center"></td>
+                        <td class="text-center"></td>
+                        <td class="text-center"><b>Total</b></td>
+                        <td class="text-center"><b>&#8377; {{total_gst_amount}}.00</b></td>
+                        <td class="text-center"><b>&#8377; {{grand_total_amount}}.00</b></td>
+                        <td> </td>
+                    </tr>
+                    {% else %}
+
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</main><!-- End #main -->
+
+
+
+
+<script>
+    $(function(){
+     $("#search_product").selectize();
+    }); 
+</script>
+   
+
+{% endblock content %}
