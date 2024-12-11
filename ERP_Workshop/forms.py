@@ -106,10 +106,29 @@ class ProductForm(forms.ModelForm):
 class PurchaseItemForm(forms.ModelForm):
     class Meta:
         model = PurchaseItem
-        fields = ['product', 'quantity', 'cost_per_unit', 'total_amount']
+        fields = ['quantity', 'cost_per_unit', 'total_amount']
         widgets = {
-            'product': forms.Select(attrs={'class': 'form-control'}),
-            'quantity': forms.NumberInput(attrs={'class': 'form-control', 'min': '1'}),
-            'cost_per_unit': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
-            'total_amount': forms.NumberInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+            'quantity': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': '1',
+                'placeholder': 'Enter Quantity',
+                'oninput': 'calculate_amount()'  # Call the function on input
+            }),
+            'cost_per_unit': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'step': '0.01',
+                'placeholder': 'Enter Cost per Unit',
+                'oninput': 'calculate_amount()'  # Call the function on input
+            }),
+            'total_amount': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'readonly': 'readonly',
+                'placeholder': 'Total Amount'
+            }),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.label = ''  # Hide labels
+

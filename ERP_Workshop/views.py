@@ -139,6 +139,23 @@ def create_purchase(request):
             return JsonResponse({'success': False, 'errors': errors}, status=400)
     return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=405)
 
+def get_product_details(request):
+    product_code = request.GET.get('product_code')  # Get the product code from the request
+    if product_code:
+        try:
+            product = get_object_or_404(Product, product_code=product_code)  
+            data = {        
+                'id': product.id,
+                'product_name': product.product_name,
+                'product_rate': product.sale_price,  # Ensure this field exists in your model
+                'product_code': product.product_code,           # Include any other necessary fields
+            }
+            return JsonResponse(data, safe=False)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    return JsonResponse({'error': 'Invalid Product Code'}, status=400)
+
+
 def delete_purchase(request, id):
     purchase = get_object_or_404(Purchase, id=id)
     if purchase:
@@ -152,7 +169,64 @@ def purchase_item_list(request,id):
     product_data = list(Product.objects.select_related('model'))
     cache.set('product_data', product_data, timeout=300)  # Store for 300 seconds
     product_data = cache.get('product_data')
-    return render(request, "workshop_purchase_item_list.html",{'item':item,'purchase':purchase,'product_data':product_data})
+    if request.method == 'POST':
+        form = PurchaseItemForm(request.POST)
+        product_id=request.POST.get('product_id') 
+        if form.is_valid(): 
+            fm=form.save(commit=False)
+            fm.purchase=Purchase.objects.get(id=id)
+            fm.product=Product.objects.get(id=product_id)
+            fm.save()
+        else:
+            print("Form errors:", form.errors)
+    form = PurchaseItemForm()
+    return render(request, "workshop_purchase_item_list.html",{'form':form,'item':item,'purchase':purchase,'product_data':product_data})
+
+# def create_purchase_item(request):
+
+#     if request.method == 'POST':
+#         product_id = request.POST.get('product_id')
+#         purchase_id = request.POST.get('purchase_id')
+#         product_code = request.POST.get('product_code')
+#         product_name = request.POST.get('product_name')
+#         quantity = request.POST.get('quantity')
+#         rate = request.POST.get('rate')
+#         total_amount = request.POST.get('total_amount')
+ 
+#         if not (product_code and product_name and quantity and rate and total_amount):
+#             return JsonResponse({'error': 'All fields are required.'}, status=400)
+
+#         try:
+#             # Fetch the product
+#             print("Enter in login")
+#             product = Product.objects.get(id=product_id)
+#             purchase = Purchase.objects.get(id=purchase_id)
+#             # Save the purchase item
+#             purchase_item = PurchaseItem.objects.create(
+#                 product=product,
+#                 purchase=purchase,
+#                 quantity=int(quantity),
+#                 cost_per_unit=float(rate),
+#                 total_amount=float(total_amount)
+#             )
+
+#             return JsonResponse({'message': 'Purchase item successfully created.'}, status=201)
+#         except Product.DoesNotExist:
+#             return JsonResponse({'error': 'Product not found.'}, status=404)
+#         except Exception as e:
+#             return JsonResponse({'error': str(e)}, status=500)
+
+#     return JsonResponse({'error': 'Invalid request method.'}, status=405)
+
+
+def delete_purchase_item(request, id):
+    item = get_object_or_404(PurchaseItem, id=id)
+    purchase_id=item.purchase.id
+    if item:
+        item.delete()
+        messages.success(request, 'Item deleted successfully.')
+    return redirect(f'/workshop/purchase-item-list/{purchase_id}')
+
 
 def reports(request):
     return render(request, "workshop_reports.html")

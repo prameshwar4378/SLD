@@ -101,7 +101,7 @@ class PurchaseItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, db_index=True)
     quantity = models.PositiveIntegerField()
     cost_per_unit = models.DecimalField(max_digits=10, decimal_places=2)
-    total_amount = models.IntegerField(null=True, blank=True)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         # Update product stock on save
