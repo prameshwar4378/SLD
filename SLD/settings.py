@@ -124,7 +124,7 @@ AUTH_PASSWORD_VALIDATORS = [
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': 'C:/Users/user/Downloads/Django Cache',  # Ensure this directory exists
+        'LOCATION': 'C:/Users/Admin/Downloads/Pawar Sir',  # Ensure this directory exists
     }
 }
 

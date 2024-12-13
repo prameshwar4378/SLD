@@ -86,10 +86,10 @@
                                 <thead>
                                     <tr style="background:#9c4b2e;">
                                         <th scope="col" class="text-center text-white" style="">Sr.No</th>
-                                        <th scope="col" class="text-center text-white" style="">Job Card Code</th>
-                                        <th scope="col" class="text-center text-white" style="">Job Card Name</th>
-                                        <th scope="col" class="text-center text-white" style="">Model</th>
-                                        <th scope="col" class="text-center text-white" style="">Available Stock</th>
+                                        <th scope="col" class="text-center text-white" style="">Job Card Number</th>
+                                        <th scope="col" class="text-center text-white" style="">Vehicle Number</th>   
+                                        <th scope="col" class="text-center text-white" style="">Date</th>   
+                                        <th scope="col" class="text-center text-white" style="">Status</th>
                                         <th scope="col" class="text-center text-white" style="">Action</th>
                                     </tr>
                                 </thead>
@@ -98,23 +98,25 @@
                                     {% for r in job_card %}
                                     <tr>
                                         <td class="text-center">{{forloop.counter}}</td>
-                                        <td class="text-left">{{r.job_card_code}}</td>
-                                        <td class="text-left">{{r.job_card_name}}</td>
-                                        <td class="text-left">{{r.model.model_name}}</td>
+                                        <td class="text-left">{{r.job_card_number}}</td>
+                                        <td class="text-left">{{r.vehicle.vehicle_number}}</td>
+                                        <td class="text-left">{{r.job_date}}</td>
+                                        <td class="text-left">{{r.model.completed_status}}</td>
                                         <td class="text-center">
-                                            {% if r.available_stock == r.minimum_stock_alert %}
-                                            <span class="badge bg-warning">{{r.available_stock}}</span>
-                                            {% elif r.available_stock < r.minimum_stock_alert %}
-                                            <span class="badge bg-danger">{{r.available_stock}}</span>
+                                            {% if r.completed_status == "pending" %}
+                                                <span class="badge bg-danger">Pending</span>
+                                            {% elif r.in_progress == "In Progress" %}
+                                                <span class="badge bg-warning">In Progress</span>
                                             {% else %}
-                                            <span class="badge bg-success">{{r.available_stock}}</span>
+                                                <span class="badge bg-success">Completed</span>
                                             {% endif %}
                                         </td>
+
                                         <td>
                                             <center>
                                                 <a href=" "
                                                     class="btn btn-warning px-3">Update</a>
-                                                <a href="{% url 'workshop_delete_job_card' r.id %}"
+                                                <a href=""
                                                     class="btn btn-danger px-3">Delete</a>
                                             </center>
                                         </td>

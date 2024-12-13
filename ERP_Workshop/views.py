@@ -18,8 +18,8 @@ def breakdown_alerts(request):
 
 def job_card_list(request):
     form= JobCardForm()
-    jobcard=JobCard.objects.all().order_by('-id')
-    return render(request, "workshop_job_card_list.html",{'form':form,'jobcard':jobcard})
+    job_card=JobCard.objects.all().order_by('-id')
+    return render(request, "workshop_job_card_list.html",{'form':form,'job_card':job_card})
 
 def create_job_card(request):
     if request.method == 'POST':
