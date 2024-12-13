@@ -38,8 +38,10 @@ class DriverRegistrationForm(UserCreationForm):
     driver_name = forms.CharField(max_length=20, required=True, label="Driver Name")
     adhaar_number = forms.CharField(max_length=20, required=True, label="Aadhaar Number", widget=forms.TextInput(attrs={'oninput': 'generate_username()',}))
     license_number = forms.CharField(max_length=20, required=True, label="License Number")
-    phone_number = forms.CharField(max_length=15, required=True, label="Phone Number")
+    mobile_number = forms.CharField(max_length=15, required=True, label="Mobile Number")
+    alternate_mobile_number = forms.CharField(max_length=15, required=True, label="Alternate Mobile Number")
     adhaar_card_photo=forms.FileField(required=False, label="Upload Adhaar Card")
+    pan_card_photo=forms.FileField(required=False, label="Upload Pan Card")
     driving_license_photo=forms.FileField(required=False, label="Upload Driving License")
     profile_photo=forms.FileField(required=False, label="Upload Profile Photo")
     address = forms.CharField(widget=forms.Textarea, required=False, label="Address")
@@ -77,11 +79,17 @@ class DriverRegistrationForm(UserCreationForm):
             raise ValidationError("This Aadhaar number is already registered.")
         return adhaar_number
 
-    def clean_phone_number(self):
-        phone_number = self.cleaned_data.get('phone_number')
-        if not re.match(r"^\d{10}$", phone_number):  # Validate exactly 10 digits
-            raise ValidationError("Phone number must be 10 digits.")
-        return phone_number
+    def clean_mobile_number(self):
+        mobile_number = self.cleaned_data.get('mobile_number')
+        if not re.match(r"^\d{10}$", mobile_number):  # Validate exactly 10 digits
+            raise ValidationError("mobile number must be 10 digits.")
+        return mobile_number
+
+    def clean_alternate_mobile_number(self):
+        alternate_mobile_number = self.cleaned_data.get('alternate_mobile_number')
+        if not re.match(r"^\d{10}$", alternate_mobile_number):  # Validate exactly 10 digits
+            raise ValidationError("Alternate mobile number must be 10 digits.")
+        return alternate_mobile_number
 
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -89,17 +97,18 @@ class DriverRegistrationForm(UserCreationForm):
             fm=user
             fm.is_driver=True
             fm.save()
-            # Create Driver instance
             Driver.objects.create(
                 user=user, 
                 driver_name=self.cleaned_data['driver_name'],
                 adhaar_number=self.cleaned_data['adhaar_number'],
                 license_number=self.cleaned_data['license_number'],
-                phone_number=self.cleaned_data['phone_number'],
+                mobile_number=self.cleaned_data['mobile_number'],
+                alternate_mobile_number=self.cleaned_data['alternate_mobile_number'],
                 address=self.cleaned_data.get('address'),
                 date_of_birth=self.cleaned_data.get('date_of_birth'),
                 date_joined=self.cleaned_data.get('date_joined'),
                 adhaar_card_photo=self.cleaned_data.get('adhaar_card_photo'),
+                pan_card_photo=self.cleaned_data.get('pan_card_photo'),
                 driving_license_photo=self.cleaned_data.get('driving_license_photo'),
                 profile_photo=self.cleaned_data.get('profile_photo')
             )
@@ -110,6 +119,7 @@ class DriverRegistrationForm(UserCreationForm):
 
 class TechnicianRegistrationForm(forms.ModelForm):
     
+    pan_card=forms.FileField(required=False, label="Upload Pan Card")
     adhaar_card=forms.FileField(required=False, label="Upload Adhaar Card")
     profile_photo=forms.FileField(required=False, label="Upload Profile Photo")
     additional_docs=forms.FileField(required=False, label="Upload Additional Document")
@@ -138,6 +148,7 @@ class TechnicianRegistrationForm(forms.ModelForm):
         label="Address", 
             )
     date_of_birth = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date'}),
         required=False, 
         label="Date of Birth", 
             )
@@ -148,11 +159,15 @@ class TechnicianRegistrationForm(forms.ModelForm):
             'technician_name',
             'adhaar_number',
             'mobile_number',
+            'alternate_mobile_number',
             'email',
             'address',
             'date_of_birth',
-        ]
-
+            'pan_card',
+            'adhaar_card',
+            'profile_photo',
+            'additional_docs',
+        ]  
     def clean_adhaar_number(self):
         adhaar_number = self.cleaned_data.get('adhaar_number')
         if not re.match(r"^\d{12}$", adhaar_number):  # Aadhaar must be 12 digits
@@ -169,6 +184,12 @@ class TechnicianRegistrationForm(forms.ModelForm):
             raise ValidationError("This mobile number is already registered.")
         return mobile_number
 
+    def clean_alternate_mobile_number(self):
+        alternate_mobile_number = self.cleaned_data.get('alternate_mobile_number')
+        if not re.match(r"^\d{10}$", alternate_mobile_number):  # Validate exactly 10 digits
+            raise ValidationError("Alternate mobile number must be 10 digits.")
+        return alternate_mobile_number
+
     def clean_email(self):
         email = self.cleaned_data.get('email')
         if email and Technician.objects.filter(email=email).exists():
@@ -180,4 +201,23 @@ class TechnicianRegistrationForm(forms.ModelForm):
         if commit:
             technician.save()
         return technician
+    
+
+class PartyForm(forms.ModelForm):
+    class Meta:
+        model = Party
+        fields = '__all__'
+ 
+    def clean_mobile_number(self):
+        mobile_number = self.cleaned_data['mobile_number']
+        if len(mobile_number) != 10:
+            raise forms.ValidationError("Mobile number must be 10 digits.")
+        return mobile_number
+
+    def clean_alternate_mobile_number(self):
+        alternate_mobile_number = self.cleaned_data['alternate_mobile_number']
+        if alternate_mobile_number:
+            if len(alternate_mobile_number) != 10:
+                raise forms.ValidationError("Alternate mobile number must be 10 digits.")
+        return alternate_mobile_number
     

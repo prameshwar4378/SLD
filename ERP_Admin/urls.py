@@ -28,4 +28,10 @@ urlpatterns = [
     path('create-technician/', views.create_technician, name='admin_create_technician'),
     path('delete-technician/<int:id>/', views.delete_technician, name='admin_delete_technician'),
 
+
+    path('party-list/', views.party_list, name='admin_party_list'),
+    path('create-party/', views.create_party, name='admin_create_party'),
+    path('delete-party/<int:id>/', views.delete_party, name='admin_delete_party'),
+
+
 ]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

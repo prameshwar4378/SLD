@@ -33,11 +33,13 @@ class Driver(models.Model):
     driver_name = models.CharField(max_length=20, null=False, blank=False)
     license_number = models.CharField(max_length=20, unique=True, null=False, blank=False)
     adhaar_number = models.CharField(max_length=20, unique=True, null=True, blank=False)
-    phone_number = models.CharField(max_length=15, null=False, blank=False)
+    mobile_number = models.CharField(max_length=15, null=False, blank=False)
+    alternate_mobile_number = models.CharField(max_length=15, blank=True, null=True)
     address = models.TextField(null=True, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
     date_joined = models.DateField(auto_now_add=False)
     adhaar_card_photo=models.FileField(upload_to="Documents", max_length=None, null=True, blank=True)
+    pan_card_photo=models.FileField(upload_to="Documents", max_length=None, null=True, blank=True)
     driving_license_photo=models.FileField(upload_to="Documents", max_length=None, null=True, blank=True)
     profile_photo=models.FileField(upload_to="Documents", max_length=None, null=True, blank=True)
     def __str__(self):
@@ -47,13 +49,15 @@ class Technician(models.Model):
     technician_name = models.CharField(max_length=100, verbose_name="Technician Name")
     adhaar_number = models.CharField(max_length=20, unique=True, verbose_name="Aadhaar Number")
     mobile_number = models.CharField(max_length=10, unique=True, verbose_name="Mobile Number")
+    alternate_mobile_number = models.CharField(max_length=15, blank=True, null=True)
     email = models.EmailField(max_length=100, unique=True, null=True, blank=True, verbose_name="Email Address")
     address = models.TextField(null=True, blank=True, verbose_name="Address")
     date_of_birth = models.DateField(null=True, blank=True, verbose_name="Date of Birth")
     date_joined = models.DateField(auto_now_add=True, verbose_name="Date Joined") 
-    adhaar_card_photo=models.FileField(upload_to="Documents", max_length=None, null=True, blank=True)
+    pan_card=models.FileField(upload_to="Documents", max_length=None, null=True, blank=True)
+    adhaar_card=models.FileField(upload_to="Documents", max_length=None, null=True, blank=True)
     profile_photo=models.FileField(upload_to="Documents", max_length=None, null=True, blank=True)
-    other_docs=models.FileField(upload_to="Documents", max_length=None, null=True, blank=True)
+    additional_docs=models.FileField(upload_to="Documents", max_length=None, null=True, blank=True)
     def __str__(self):
         return f"{self.technician_name}"
 
@@ -61,6 +65,21 @@ class Technician(models.Model):
         verbose_name = "Technician"
         verbose_name_plural = "Technicians"
 
+
+class Party(models.Model):
+    business_name = models.CharField(max_length=100)
+    customer_name = models.CharField(max_length=100)
+    gst_number = models.CharField(max_length=15, unique=True, blank=True, null=True)
+    mobile_number = models.CharField(max_length=15, unique=True)
+    alternate_mobile_number = models.CharField(max_length=15, blank=True, null=True)
+    address = models.TextField(null=True, blank=True, verbose_name="Address")
+    document1=models.FileField(upload_to="ClientDocuments", max_length=None, null=True, blank=True)
+    document2=models.FileField(upload_to="ClientDocuments", max_length=None, null=True, blank=True)
+    document3=models.FileField(upload_to="ClientDocuments", max_length=None, null=True, blank=True)
+
+    def __str__(self):
+        return self.business_name
+    
 
  
 class Model(models.Model):
@@ -122,4 +141,51 @@ class PurchaseItem(models.Model):
     def __str__(self):
         return f"{self.quantity} of {self.product.product_name} in Purchase #{self.purchase.id}"
 
+
+from django.db import models
+from django.core.validators import MinValueValidator
+
+JOB_CARD_STATUS = [
+    ('pending', 'Pending'),
+    ('in_progress', 'In Progress'),
+    ('completed', 'Completed'),
+]
+
+
+class JobCard(models.Model):
+    job_card_number = models.CharField(max_length=20, unique=True, editable=False)
+    technician = models.ForeignKey('Technician', related_name='job_cards',  on_delete=models.CASCADE, null=True, blank=True)
+    driver= models.ForeignKey('Driver', related_name='job_cards',  on_delete=models.CASCADE, null=True, blank=True)
+    job_date = models.DateField()
+    reported_defect = models.TextField()
+    completed_action = models.TextField()
+    party = models.ForeignKey('Party', related_name='job_cards', on_delete=models.SET_NULL, null=True, blank=True)
+    vehicle = models.ForeignKey('Vehicle', related_name='job_cards', on_delete=models.CASCADE)
+    completed_status = models.CharField(max_length=20, choices=JOB_CARD_STATUS, default='pending')
+    labour_cost = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, validators=[MinValueValidator(0)])
+    total_cost = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, validators=[MinValueValidator(0)])
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            last_job_card = JobCard.objects.order_by('-id').first()
+            if last_job_card:
+                last_number = int(last_job_card.job_card_number.split('-')[1])
+                self.job_card_number = f"JOB-{last_number + 1}"
+            else:
+                self.job_card_number = "JOB-1"
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Job Card {self.job_card_number} for Vehicle ID {self.vehicle.id}"
+
+
+class JobCardItem(models.Model):
+    job_card = models.ForeignKey(JobCard, related_name='items', on_delete=models.CASCADE)
+    product = models.ForeignKey('Product', related_name='job_card_items', on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(validators=[MinValueValidator(1)])
+    cost = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
+    def __str__(self):
+        return f"Item {self.product.id} for Job Card {self.job_card.job_card_number}"
+
+ 
 

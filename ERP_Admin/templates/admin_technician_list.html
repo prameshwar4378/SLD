@@ -128,11 +128,14 @@
                         <div class="col-sm-12">
                             {{ form.technician_name|as_crispy_field }}
                         </div>
-                        <div class="col-sm-6">
+                        <div class="col-sm-4">
                             {{ form.adhaar_number|as_crispy_field }}
                         </div>
-                        <div class="col-sm-6">
+                        <div class="col-sm-4">
                             {{ form.mobile_number|as_crispy_field }}
+                        </div>
+                        <div class="col-sm-4">
+                            {{ form.alternate_mobile_number|as_crispy_field }}
                         </div>
                         <div class="col-sm-6">
                             {{ form.email|as_crispy_field }}
@@ -140,6 +143,20 @@
                         <div class="col-sm-6">
                             {{ form.date_of_birth|as_crispy_field }}
                         </div>
+                        
+                        <div class="col-sm-6">
+                            {{ form.adhaar_card|as_crispy_field }}
+                        </div>
+                        <div class="col-sm-6">
+                            {{ form.additional_docs|as_crispy_field }}
+                        </div>
+                        <div class="col-sm-6">
+                            {{ form.profile_photo|as_crispy_field }}
+                        </div>
+                        <div class="col-sm-6">
+                            {{ form.pan_card|as_crispy_field }}
+                        </div>
+
                         <div class="col-sm-12">
                             {{ form.address|as_crispy_field }}
                         </div>

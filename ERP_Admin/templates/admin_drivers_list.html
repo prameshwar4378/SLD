@@ -67,7 +67,7 @@
                                             <th scope="col" class="text-center text-white">Driver Name</th>
                                             <th scope="col" class="text-center text-white">Aadhaar Number</th>
                                             <th scope="col" class="text-center text-white">License Number</th>
-                                            <th scope="col" class="text-center text-white">Phone Number</th>
+                                            <th scope="col" class="text-center text-white">Mobile Number</th>
                                             <th scope="col" class="text-center text-white">Date Joined</th>
                                             <th scope="col" class="text-center text-white">Action</th>
                                         </tr>
@@ -80,7 +80,7 @@
                                             <td class="text-left">{{ driver.driver_name }}</td>
                                             <td class="text-center">{{ driver.adhaar_number }}</td>
                                             <td class="text-center">{{ driver.license_number }}</td>
-                                            <td class="text-center">{{ driver.phone_number }}</td>
+                                            <td class="text-center">{{ driver.mobile_number }}</td>
                                             <td class="text-center">{{ driver.date_joined }}</td>
                                             <td>
                                                 <center>
@@ -138,11 +138,14 @@
                         <div class="col-sm-6">
                             {{ form.password2|as_crispy_field }}
                         </div>
-                        <div class="col-sm-6">
+                        <div class="col-sm-4">
                             {{ form.license_number|as_crispy_field }}
                         </div>
-                        <div class="col-sm-6">
-                            {{ form.phone_number|as_crispy_field }}
+                        <div class="col-sm-4">
+                            {{ form.mobile_number|as_crispy_field }}
+                        </div>
+                        <div class="col-sm-4">
+                            {{ form.alternate_mobile_number|as_crispy_field }}
                         </div>
                         <div class="col-sm-6">
                             {{ form.date_of_birth|as_crispy_field }}
@@ -153,14 +156,17 @@
                         <div class="col-sm-12">
                             {{ form.address|as_crispy_field }}
                         </div>
-                        <div class="col-sm-4">
+                        <div class="col-sm-3">
                             {{ form.adhaar_card_photo|as_crispy_field }}
                         </div>
-                        <div class="col-sm-4">
+                        <div class="col-sm-3">
                             {{ form.driving_license_photo|as_crispy_field }}
                         </div>
-                        <div class="col-sm-4">
+                        <div class="col-sm-3">
                             {{ form.profile_photo|as_crispy_field }}
+                        </div>
+                        <div class="col-sm-3">
+                            {{ form.pan_card_photo|as_crispy_field }}
                         </div>
                     </div>
                     <div class="modal-footer">

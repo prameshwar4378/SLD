@@ -192,6 +192,43 @@
 
 
 <script>
+    document.getElementById('createPurchaseForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const form = e.target;
+        const formData = new FormData(form);
+        const errorAlert = document.getElementById('createPurchaseError');
+        
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message); // Show success alert
+                location.reload();   // Refresh the page or update the list dynamically
+            } else {
+                let errorMessage = '<strong>Error:</strong><br>';
+                for (const [field, errors] of Object.entries(data.errors)) {
+                    errorMessage += `${field}: ${errors.join(', ')}<br>`;
+                }
+                errorAlert.innerHTML = errorMessage;
+                errorAlert.classList.remove('d-none');
+            }
+        })
+        .catch(error => {
+            errorAlert.innerHTML = '<strong>An unexpected error occurred. Please try again later.</strong>';
+            errorAlert.classList.remove('d-none');
+        });
+    });
+    
+    </script>
+
+    
+<script>
     function mini_window(element) { 
         const url = element.dataset.url;
         var screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;

@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from ERP_Admin.models import Purchase, PurchaseItem,Product,Model
+from ERP_Admin.models import Purchase, PurchaseItem,Product,Model,JobCard,JobCardItem
 
 class PurchaseForm(forms.ModelForm):
     class Meta:
@@ -27,7 +27,7 @@ class PurchaseForm(forms.ModelForm):
         if supplier_name and len(supplier_name) < 3:
             raise ValidationError("Supplier name must be at least 3 characters long.")
         return supplier_name
-
+ 
     def clean_total_cost(self):
         total_cost = self.cleaned_data.get('total_cost')
         if total_cost <= 0:
@@ -132,3 +132,50 @@ class PurchaseItemForm(forms.ModelForm):
         for field in self.fields.values():
             field.label = ''  # Hide labels
 
+
+ 
+class JobCardForm(forms.ModelForm):
+    class Meta:
+        model = JobCard
+        fields = [
+            'technician', 'job_date', 'reported_defect', 
+            'party', 'vehicle', 'driver' 
+        ]
+        widgets = {
+            'job_date': forms.DateInput(attrs={'type': 'date'}),
+            'reported_defect': forms.Textarea(attrs={'rows': 3}),
+        }
+
+    # def clean_labour_cost(self):
+    #     labour_cost = self.cleaned_data.get('labour_cost')
+    #     if labour_cost is not None and labour_cost < 0:
+    #         raise ValidationError("Labour cost must be a non-negative value.")
+    #     return labour_cost
+
+    # def clean_total_cost(self):
+    #     total_cost = self.cleaned_data.get('total_cost')
+    #     if total_cost is not None and total_cost < 0:
+    #         raise ValidationError("Total cost must be a non-negative value.")
+    #     return total_cost
+
+
+class JobCardItemForm(forms.ModelForm):
+    class Meta:
+        model = JobCardItem
+        fields = ['job_card', 'product', 'quantity', 'cost']
+        widgets = {
+            'quantity': forms.NumberInput(attrs={'min': 1}),
+            'cost': forms.NumberInput(attrs={'step': 0.01}),
+        }
+
+    def clean_quantity(self):
+        quantity = self.cleaned_data.get('quantity')
+        if quantity <= 0:
+            raise ValidationError("Quantity must be a positive value.")
+        return quantity
+
+    def clean_cost(self):
+        cost = self.cleaned_data.get('cost')
+        if cost < 0:
+            raise ValidationError("Cost must be a non-negative value.")
+        return cost

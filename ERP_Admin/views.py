@@ -42,7 +42,7 @@ def update_cache_on_delete(sender, instance, **kwargs):
 def update_driver_cache_on_save(sender, instance, **kwargs):
     # Use select_related to fetch the related CustomUser data in one query
     drivers = Driver.objects.select_related('user').all().values(
-        'id', 'driver_name', 'license_number', 'phone_number', 'adhaar_number', 'address', 'date_of_birth', 'date_joined',
+        'id', 'driver_name', 'license_number', 'mobile_number','alternate_mobile_number', 'adhaar_number', 'address', 'date_of_birth', 'date_joined',
         'user__username', 'user__email', 'user__first_name', 'user__last_name'  # Add related fields from CustomUser
     )
     # Update the cache with the latest driver data, including CustomUser related fields
@@ -53,7 +53,7 @@ def update_driver_cache_on_save(sender, instance, **kwargs):
 def update_driver_cache_on_delete(sender, instance, **kwargs):
     # Use select_related to fetch related CustomUser data after a delete
     drivers = Driver.objects.select_related('user').all().values(
-        'id', 'driver_name', 'license_number', 'phone_number', 'adhaar_number', 'address', 'date_of_birth', 'date_joined',
+        'id', 'driver_name', 'license_number', 'mobile_number','alternate_mobile_number', 'adhaar_number', 'address', 'date_of_birth', 'date_joined',
         'user__username', 'user__email', 'user__first_name', 'user__last_name'   
     )
     # Update the cache to reflect the deletion
@@ -68,7 +68,7 @@ def update_driver_cache_on_delete(sender, instance, **kwargs):
 def update_technician_cache_on_save(sender, instance, **kwargs):
     # Retrieve all technicians data and serialize it if needed
     technicians = Technician.objects.all().values(
-        'id', 'technician_name', 'adhaar_number', 'mobile_number', 'email', 'address', 'date_of_birth', 'date_joined'
+        'id', 'technician_name', 'adhaar_number', 'mobile_number','alternate_mobile_number', 'email', 'address', 'date_of_birth', 'date_joined'
     )
     # Update cache with the latest technicians data
     cache.set('cache_technicians', list(technicians), timeout=None)
@@ -78,12 +78,30 @@ def update_technician_cache_on_save(sender, instance, **kwargs):
 def update_technician_cache_on_delete(sender, instance, **kwargs):
     # Retrieve all technicians data after delete
     technicians = Technician.objects.all().values(
-        'id', 'technician_name', 'adhaar_number', 'mobile_number', 'email', 'address', 'date_of_birth', 'date_joined'
+        'id', 'technician_name', 'adhaar_number', 'mobile_number','alternate_mobile_number', 'email', 'address', 'date_of_birth', 'date_joined'
     )
     # Update the cache to reflect the deletion
     cache.set('cache_technicians', list(technicians), timeout=None)
     print("Technician cache updated on delete")
 
+
+
+
+@receiver(post_save, sender=Party)
+def update_party_cache_on_save(sender, instance, **kwargs):
+    # Retrieve all partys data and serialize it if needed
+    partys = Party.objects.all() 
+    # Update cache with the latest partys data
+    cache.set('cache_partys', list(partys), timeout=None)
+    print("Party cache updated on save")
+
+@receiver(post_delete, sender=Party)
+def update_party_cache_on_delete(sender, instance, **kwargs):
+    # Retrieve all partys data after delete
+    partys = Party.objects.all() 
+    # Update the cache to reflect the deletion
+    cache.set('cache_partys', list(partys), timeout=None)
+    print("Party cache updated on delete")
 
 
 
@@ -217,7 +235,7 @@ def vehicle_list(request):
 
 def create_vehicle(request):
     if request.method == 'POST':
-        form = VehicleForm(request.POST)
+        form = VehicleForm(request.POST, request.FILES)
         if form.is_valid():
             try:
                 fm=form.save()
@@ -286,7 +304,7 @@ def technician_list(request):
 
 def create_technician(request):
     if request.method == 'POST':
-        form = TechnicianRegistrationForm(request.POST)
+        form = TechnicianRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
             try:
                 fm=form.save()
@@ -311,6 +329,45 @@ def delete_technician(request, id):
         messages.success(request, 'Technician deleted successfully.')
     return redirect('/admin/technician-list')
 
+
+
+
+
+
+def party_list(request):
+    partys=cache.get('cache_partys')
+    if not partys:
+        partys = Party.objects.all() 
+        cache.set('cache_partys', list(partys), timeout=None)
+    form = PartyForm()
+    return render(request, "admin_party_list.html",{'form':form,'partys':partys})
+
+def create_party(request):
+    if request.method == 'POST':
+        form = PartyForm(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                fm=form.save()
+                messages.success(request,"Party created successfully!")
+                return JsonResponse({'success': True, 'message': 'Party created successfully!'})
+            except ValidationError as e:
+                # Handle explicit model-level validation errors
+                return JsonResponse({'success': False, 'errors': {'non_field_errors': str(e)}}, status=400)
+        else:
+            # Handle form errors, including unique constraint violations
+            errors = {
+                field: [str(error) for error in error_list]
+                for field, error_list in form.errors.items()
+            }
+            return JsonResponse({'success': False, 'errors': errors}, status=400)
+    return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=405)
+ 
+def delete_party(request, id):
+    party = get_object_or_404(Party, id=id)
+    if party:
+        party.delete()
+        messages.success(request, 'Party deleted successfully.')
+    return redirect('/admin/party-list')
 
 
 

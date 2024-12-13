@@ -104,7 +104,7 @@
                 </div>
 
                 <!-- Supplier Name -->
-                <div class="col-sm-8 mb-2">
+                <div class="col-sm-4 mb-2">
                     <div class="info-field">
                         <strong>Supplier Name:</strong> {{ purchase.supplier_name }}
                     </div>
@@ -131,6 +131,17 @@
                     </div>
                 </div>
 
+                <!-- Total Cost -->
+                <div class="col-sm-4 mb-2">
+                    <div class="info-field">
+                        {% if purchase.bill_file %}
+                        <a href="{{purchase.bill_file.url}}" class="btn btn-success" download>Download Biil</a>
+                        {% else %}
+                        <a href="" class="btn btn-secondary" >Bill Not Available</a>
+
+                        {% endif %}
+                    </div>
+                </div>
                 <!-- Bill File -->
 
             </div>
@@ -141,7 +152,7 @@
                 <div class="col-sm-9">
 
                     <form action="#" method="get" class="position-relative">{% csrf_token %}
-                        <select name="search_product" id="search_product" class="form-control" onchange="get_details()">
+                        <select name="search_product" id="search_product" class="form-control" onchange="get_details()" required>
                             <option value="">Search Product...</option>
                             {% for r in product_data %}
                             <option value="{{ r.product_code }}">{{ r.product_name }}</option>
@@ -173,17 +184,11 @@
                         <center><button type="submit" class="btn btn-primary mt-1 px-5">Submit</button></center>
                     </form>
 
-                </div>
+                </div> 
                 <div class="col-sm-3">
-                    <img src="" alt="">
+                    <img src="" alt="" name="product_image" id="product_image" style=" width: 150px; height: 150px;">
                 </div>
 
-
-
-
-                <div class="col-sm-3">
-
-                </div>
             </div>
         </div>
 
@@ -224,8 +229,7 @@
                         <td class="text-center"></td>
                         <td class="text-center"></td>
                         <td class="text-center"><b>Total</b></td>
-                        <td class="text-center"><b>&#8377; {{total_gst_amount}}.00</b></td>
-                        <td class="text-center"><b>&#8377; {{grand_total_amount}}.00</b></td>
+                        <td class="text-center"><b>&#8377; {{total_amount}}</b></td>
                         <td> </td>
                     </tr>
                     {% else %}
@@ -260,9 +264,15 @@
                         $('#id_total_amount').val(data.product_rate);
                         $('#product_id').val(data.id);
                         $('#id_quantity').val(1);
-
+                        if (data.product_image_url) {
+                            $('#product_image').attr('src', data.product_image_url);  // Set the image URL dynamically
+                        } else {
+                            $('#product_image').attr('src', 'default-image.jpg');  // Set a default image if not available
+                        }
                         // var qty = $('#id_quantity').val(1);  // Default quantity
                         // var rate = parseFloat(data.sale_amount);
+                        
+
                     } else {
                         console.error(data.error);
                     }
@@ -286,6 +296,7 @@
     }
 </script>
 
+ 
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {

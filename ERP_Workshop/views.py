@@ -1,18 +1,49 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from .forms import *
 from django.http import JsonResponse
-from ERP_Admin.models import Product,Model,Purchase
+from ERP_Admin.models import Product,Model,Purchase,JobCard
 import openpyxl
 from django.contrib import messages
 from django.core.cache import cache
+from django.db.models import Sum
+
+
+
 def dashboard(request):
     return render(request, "workshop_dashboard.html")
 
 def breakdown_alerts(request):
     return render(request, "workshop_breakdown_alerts.html")
 
-def job_card_management(request):
-    return render(request, "workshop_job_card_management.html")
+
+def job_card_list(request):
+    form= JobCardForm()
+    jobcard=JobCard.objects.all().order_by('-id')
+    return render(request, "workshop_job_card_list.html",{'form':form,'jobcard':jobcard})
+
+def create_job_card(request):
+    if request.method == 'POST':
+        form = JobCardForm(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                form.save()
+                messages.success(request,"Job Card created successfully!")
+                return JsonResponse({'success': True, 'message': 'Form Submited'}, status=200)
+                # return redirect('/workshop/jobcard-list/')
+            except ValidationError as e:
+                # Handle explicit model-level validation errors
+                print("SUcess 3")
+                return JsonResponse({'success': False, 'errors': {'non_field_errors': str(e)}}, status=400)
+        else:
+            # Handle form errors, including unique constraint violations
+            print("SUcess 4")
+            errors = {
+                field: [str(error) for error in error_list]
+                for field, error_list in form.errors.items()
+            }
+            return JsonResponse({'success': False, 'errors': errors}, status=400)
+    return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=405)
+ 
 
 def maintenance_logs(request):
     return render(request, "workshop_maintenance_logs.html")
@@ -120,18 +151,23 @@ def purchase_list(request):
     return render(request, "workshop_purchase_list.html",{'form':form,'purchase':purchase})
 
 def create_purchase(request):
+    print("SUcess 1")
     if request.method == 'POST':
-        form = PurchaseForm(request.POST)
+        form = PurchaseForm(request.POST, request.FILES)
         if form.is_valid():
             try:
+                print("SUcess 2")
                 form.save()
                 messages.success(request,"Purchase created successfully!")
-                return redirect('/workshop/purchase-list/')
+                return JsonResponse({'success': True, 'message': 'Form Submited'}, status=200)
+                # return redirect('/workshop/purchase-list/')
             except ValidationError as e:
                 # Handle explicit model-level validation errors
+                print("SUcess 3")
                 return JsonResponse({'success': False, 'errors': {'non_field_errors': str(e)}}, status=400)
         else:
             # Handle form errors, including unique constraint violations
+            print("SUcess 4")
             errors = {
                 field: [str(error) for error in error_list]
                 for field, error_list in form.errors.items()
@@ -142,17 +178,16 @@ def create_purchase(request):
 def get_product_details(request):
     product_code = request.GET.get('product_code')  # Get the product code from the request
     if product_code:
-        try:
             product = get_object_or_404(Product, product_code=product_code)  
+            product_image_url = product.product_image.url if product.product_image else None
             data = {        
                 'id': product.id,
                 'product_name': product.product_name,
                 'product_rate': product.sale_price,  # Ensure this field exists in your model
-                'product_code': product.product_code,           # Include any other necessary fields
+                'product_code': product.product_code, 
+                'product_image_url':product_image_url          # Include any other necessary fields
             }
-            return JsonResponse(data, safe=False)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=400)
+            return JsonResponse(data, safe=False) 
     return JsonResponse({'error': 'Invalid Product Code'}, status=400)
 
 
@@ -165,22 +200,30 @@ def delete_purchase(request, id):
 
 def purchase_item_list(request,id):
     purchase=get_object_or_404(Purchase, id=id)
-    item=PurchaseItem.objects.all().order_by('-id')
+    print(purchase.bill_file)
     product_data = list(Product.objects.select_related('model'))
     cache.set('product_data', product_data, timeout=300)  # Store for 300 seconds
     product_data = cache.get('product_data')
     if request.method == 'POST':
         form = PurchaseItemForm(request.POST)
         product_id=request.POST.get('product_id') 
-        if form.is_valid(): 
+        if form.is_valid() and product_id: 
             fm=form.save(commit=False)
             fm.purchase=Purchase.objects.get(id=id)
             fm.product=Product.objects.get(id=product_id)
             fm.save()
+            item=PurchaseItem.objects.filter(purchase=purchase).order_by('-id')
+            total_amount = item.aggregate(Sum('total_amount'))['total_amount__sum']
+            total_amount = round(total_amount, 2) if total_amount is not None else 0.00  # In case there are no items, set total_amount to 0
         else:
             print("Form errors:", form.errors)
+    else:
+            item=PurchaseItem.objects.filter(purchase=purchase).order_by('-id')
+            total_amount = item.aggregate(Sum('total_amount'))['total_amount__sum']
+            total_amount = round(total_amount, 2) if total_amount is not None else 0.00  # In case there are no items, set total_amount to 0
+
     form = PurchaseItemForm()
-    return render(request, "workshop_purchase_item_list.html",{'form':form,'item':item,'purchase':purchase,'product_data':product_data})
+    return render(request, "workshop_purchase_item_list.html",{'form':form,'item':item,'purchase':purchase,'product_data':product_data,'total_amount':total_amount})
 
 # def create_purchase_item(request):
 
