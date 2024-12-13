@@ -138,14 +138,16 @@ class JobCardForm(forms.ModelForm):
     class Meta:
         model = JobCard
         fields = [
-            'technician', 'job_date', 'reported_defect', 
+            'technician', 'date', 'reported_defect', 
             'party', 'vehicle', 'driver' 
         ]
         widgets = {
-            'job_date': forms.DateInput(attrs={'type': 'date'}),
-            'reported_defect': forms.Textarea(attrs={'rows': 3}),
+            'date': forms.DateInput(attrs={'type': 'date'}),
+            'technician': forms.Select(attrs={'id': 'id_technician'}),
+            'driver': forms.Select(attrs={'id': 'id_driver'}),
+            'party': forms.Select(attrs={'id': 'id_party'}),
+            'vehicle': forms.Select(attrs={'id': 'id_vehicle'}),
         }
-
     # def clean_labour_cost(self):
     #     labour_cost = self.cleaned_data.get('labour_cost')
     #     if labour_cost is not None and labour_cost < 0:
@@ -162,12 +164,24 @@ class JobCardForm(forms.ModelForm):
 class JobCardItemForm(forms.ModelForm):
     class Meta:
         model = JobCardItem
-        fields = ['job_card', 'product', 'quantity', 'cost']
+        fields = ['quantity', 'cost','total_cost']
         widgets = {
             'quantity': forms.NumberInput(attrs={'min': 1}),
-            'cost': forms.NumberInput(attrs={'step': 0.01}),
+            'cost': forms.NumberInput(attrs={'step': 1,'min': 0}),
+      
+            'quantity': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': '1',
+                'placeholder': 'Enter Quantity',
+                'oninput': 'calculate_amount()'  # Call the function on input
+            }),
+            'cost': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'step': '1',
+                'placeholder': 'Enter Cost per Unit',
+                'oninput': 'calculate_amount()'  # Call the function on input
+            }),
         }
-
     def clean_quantity(self):
         quantity = self.cleaned_data.get('quantity')
         if quantity <= 0:
@@ -179,3 +193,12 @@ class JobCardItemForm(forms.ModelForm):
         if cost < 0:
             raise ValidationError("Cost must be a non-negative value.")
         return cost
+    
+
+ 
+class CloseJobCardForm(forms.ModelForm):
+    class Meta:
+        model = JobCard
+        fields = [
+            'completed_action', 'status', 'labour_cost', 
+        ]

@@ -10,6 +10,12 @@ urlpatterns = [
 
     path('job_card_list/', views.job_card_list, name='workshop_job_card_list'),
     path('create_job_card/', views.create_job_card, name='workshop_create_job_card'),
+    path('update_job_card/<int:id>', views.update_job_card, name='workshop_update_job_card'),
+    path('delete_job_card/<int:id>', views.delete_job_card, name='workshop_delete_job_card'),
+    path('job_card_item_list/<int:id>', views.job_card_item_list, name='workshop_job_card_item_list'),
+    path('delete_job_card_item/<int:id>', views.delete_job_card_item, name='workshop_delete_job_card_item'),
+    path('close_job_card/', views.close_job_card, name='workshop_close_job_card'),
+    path('print_job_card/<int:id>', views.print_job_card, name='workshop_print_job_card'),
 
     path('maintenance-logs/', views.maintenance_logs, name='workshop_maintenance_logs'),
     path('maintenance-schedule/', views.maintenance_schedule, name='workshop_maintenance_schedule'),

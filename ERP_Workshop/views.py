@@ -43,7 +43,132 @@ def create_job_card(request):
             }
             return JsonResponse({'success': False, 'errors': errors}, status=400)
     return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=405)
- 
+
+
+def update_job_card(request, id):
+    job_card = JobCard.objects.get(id=id)  # Retrieve the JobCard instance
+    if request.method == 'POST':
+        form = JobCardForm(request.POST, instance=job_card)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Job Card Updated successfully.')
+            return redirect(f'/workshop/update_job_card/{id}')  # Redirect to a list view or other desired page
+    else:
+        form = JobCardForm(instance=job_card)
+    return render(request, 'workshop_update_job_card.html', {'form': form})
+
+
+def delete_job_card(request, id):
+    job_card = get_object_or_404(JobCard, id=id)
+    if job_card:
+        job_card.delete()
+        messages.success(request, 'Job Card deleted successfully.')
+    return redirect('/workshop/job_card_list')
+
+def job_card_item_list(request, id):
+    close_job_card_form=CloseJobCardForm()
+    job_card = get_object_or_404(JobCard, id=id)
+    # Fetch product data and cache it
+    items = JobCardItem.objects.filter(job_card=job_card).order_by('-id')
+    total_cost = items.aggregate(Sum('cost'))['cost__sum']
+    total_cost = round(total_cost, 2) if total_cost is not None else 0.00
+
+    total_cost=None
+    labour_cost=None
+    grand_total_cost=None
+
+    product_data = cache.get('product_data')
+    if not product_data:
+        product_data = list(Product.objects.all())
+        cache.set('product_data', product_data, timeout=300)
+
+    if request.method == 'POST':
+        form = JobCardItemForm(request.POST)
+        product_id = request.POST.get('product_id')
+        print(product_id)
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.job_card = job_card
+            item.product = Product.objects.get(id=product_id)
+            item.save()
+
+            # Recalculate total cost after saving a new item
+            items = JobCardItem.objects.filter(job_card=job_card).order_by('-id')
+            total_cost = items.aggregate(Sum('total_cost'))['total_cost__sum']
+            total_cost = round(total_cost, 2) if total_cost is not None else 0.00
+        else:
+            print("Form errors:", form.errors)
+    else:
+        items = JobCardItem.objects.filter(job_card=job_card).order_by('-id')
+        total_cost = items.aggregate(Sum('total_cost'))['total_cost__sum']
+        total_cost = round(total_cost, 2) if total_cost is not None else 0.00
+        labour_cost=int(job_card.labour_cost) if job_card.labour_cost is not None else 0.00
+        grand_total_cost=round(total_cost+labour_cost,2)
+
+    form = JobCardItemForm()
+
+    return render(request, "workshop_job_card_item_list.html", {
+        'form': form,
+        'close_job_card_form':close_job_card_form,
+        'items': items,
+        'job_card': job_card,
+        'product_data': product_data,
+        'total_cost': total_cost,
+        'labour_cost':labour_cost,
+        'grand_total_cost':grand_total_cost
+    })
+
+
+def delete_job_card_item(request, id):
+    item = get_object_or_404(JobCardItem, id=id)
+    job_card_id=item.job_card.id
+    if item:
+        item.delete()
+        messages.success(request, 'Item deleted successfully.')
+    return redirect(f'/workshop/job_card_item_list/{job_card_id}')
+
+
+def close_job_card(request):
+    if request.method == 'POST':
+        job_card_id=request.POST.get('job_card_id')
+        job_card = JobCard.objects.get(id=job_card_id)  # Retrieve the JobCard instance
+        form = CloseJobCardForm(request.POST,instance=job_card)
+        if form.is_valid():
+                form.save()
+                messages.success(request, 'Job Card Closed successfully.')
+                return redirect(f'/workshop/job_card_item_list/{job_card_id}')
+        else: 
+                messages.error(request, 'Error occur.')
+                return redirect(f'/workshop/job_card_item_list/{job_card_id}')
+    return redirect('/workshop/job_card_list/')
+
+def print_job_card(request, id):
+    job_card = JobCard.objects.get(id=id)
+    items = JobCardItem.objects.filter(job_card=job_card).order_by('-id')
+
+    # Calculating total cost
+    total_cost = items.aggregate(Sum('total_cost'))['total_cost__sum']
+    total_cost = round(total_cost, 2) if total_cost is not None else 0
+
+    # Calculating total quantity, total rate (cost), and taxable amount
+    total_quantity = items.aggregate(Sum('quantity'))['quantity__sum'] or 0
+    total_rate = items.aggregate(Sum('cost'))['cost__sum'] or 0
+    total_taxable_amount = total_cost
+
+    # Labour cost and grand total
+    labour_cost = round(job_card.labour_cost, 2)
+    grand_total_cost = round(total_cost + labour_cost, 2)
+
+    return render(request, "workshop_print_job_card.html", {
+        'job_card': job_card,
+        'items': items,
+        'total_cost': total_cost,
+        'total_quantity': total_quantity,
+        'total_rate': total_rate,
+        'total_taxable_amount': total_taxable_amount,
+        'labour_cost': labour_cost,
+        'grand_total_cost': grand_total_cost
+    })
 
 def maintenance_logs(request):
     return render(request, "workshop_maintenance_logs.html")

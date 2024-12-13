@@ -100,12 +100,11 @@
                                         <td class="text-center">{{forloop.counter}}</td>
                                         <td class="text-left">{{r.job_card_number}}</td>
                                         <td class="text-left">{{r.vehicle.vehicle_number}}</td>
-                                        <td class="text-left">{{r.job_date}}</td>
-                                        <td class="text-left">{{r.model.completed_status}}</td>
+                                        <td class="text-left">{{r.date}}</td>
                                         <td class="text-center">
-                                            {% if r.completed_status == "pending" %}
+                                            {% if r.status == "pending" %}
                                                 <span class="badge bg-danger">Pending</span>
-                                            {% elif r.in_progress == "In Progress" %}
+                                            {% elif r.status == "in_progress" %}
                                                 <span class="badge bg-warning">In Progress</span>
                                             {% else %}
                                                 <span class="badge bg-success">Completed</span>
@@ -113,11 +112,12 @@
                                         </td>
 
                                         <td>
-                                            <center>
-                                                <a href=" "
-                                                    class="btn btn-warning px-3">Update</a>
-                                                <a href=""
-                                                    class="btn btn-danger px-3">Delete</a>
+                                            <center> 
+                                                <a href="javascript:void(0);" data-url="{% url "workshop_job_card_item_list" r.id %}" class="btn btn-primary px-2 py-2" onclick="mini_window_1(this)">Manage</a>
+                                                <a href="javascript:void(0);" data-url="{% url 'workshop_update_job_card' r.id %}" class="btn btn-warning px-2 py-2" onclick="mini_window_2(this)">Update</a>
+                                                
+                                                <a href="{% url "workshop_delete_job_card" r.id %}"
+                                                    class="btn btn-danger px-2 py-2">Delete</a>
                                             </center>
                                         </td>
                                     </tr>
@@ -151,7 +151,7 @@
                     {% csrf_token %}
                     <div class="row"> 
                         <div class="col-sm-4">
-                            {{ form.job_date|as_crispy_field }}
+                            {{ form.date|as_crispy_field }}
                         </div>
                         <div class="col-sm-4">
                             {{ form.technician|as_crispy_field }}
@@ -238,5 +238,38 @@ document.getElementById('createJobCardForm').addEventListener('submit', function
 </script>
 
  
+
+<script>
+    function mini_window_1(element) { 
+        const url = element.dataset.url;
+        var screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        var screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+        var newWidth = screenWidth * 0.9;  // 90% of the screen width
+        var newHeight = screenHeight * 0.9;  // 90% of the screen height
+        var left = (screenWidth - newWidth) / 2;
+        var top = (screenHeight - newHeight) / 2;
+        var windowFeatures = `width=${newWidth},height=${newHeight},scrollbars=yes,resizable=yes,top=${top},left=${left}`;
+        var newWindow = window.open(url, "miniWindow", windowFeatures);
+        newWindow.onload = function() {
+            newWindow.location.replace(url);
+        };
+    }
+
+    
+    function mini_window_2(element) { 
+        const url = element.dataset.url;
+        var screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        var screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+        var newWidth = screenWidth * 0.5;  // 90% of the screen width
+        var newHeight = screenHeight * 0.8;  // 90% of the screen height
+        var left = (screenWidth - newWidth) / 2;
+        var top = (screenHeight - newHeight) / 2;
+        var windowFeatures = `width=${newWidth},height=${newHeight},scrollbars=yes,resizable=yes,top=${top},left=${left}`;
+        var newWindow = window.open(url, "miniWindow", windowFeatures);
+        newWindow.onload = function() {
+            newWindow.location.replace(url);
+        };
+    }
+</script>
 
 {% endblock content %}

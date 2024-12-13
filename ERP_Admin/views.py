@@ -104,37 +104,41 @@ def update_party_cache_on_delete(sender, instance, **kwargs):
     print("Party cache updated on delete")
 
 
-
-
 def login(request): 
     if request.user.is_authenticated:
+        print(type(request.user))  # Debug print to check the model being used
         return redirect_user_based_on_role(request, request.user)
-    
+
     if request.method == 'POST': 
         username = request.POST.get('username', None)
         password = request.POST.get('password', None)
         user = authenticate(request, username=username, password=password)
+        print(f'Authenticated user: {user}, User type: {type(user)}')  # Debug print
         if user is not None:
             auth_login(request, user)
             return redirect_user_based_on_role(request, user)
         else:
             messages.error(request, 'Oops...! User does not exist. Please try again.')
-    
+
     return render(request, 'login.html')
 
+
 def redirect_user_based_on_role(request, user):
-    """Helper function to redirect users based on their role."""
     if user.is_superuser:
-        return redirect('/developer/dashboard')
-    elif user.is_admin:
+        print('Redirecting to Admin Dashboard')  # Debug print
         return redirect('/admin/dashboard')
     elif user.is_workshop:
+        print('Redirecting to Workshop Dashboard')  # Debug print
         return redirect('/workshop/dashboard')
     elif user.is_account:
+        print('Redirecting to Account Dashboard')  # Debug print
         return redirect('/account/dashboard')
     else:
+        print('Unauthorized user role')  # Debug print
         messages.error(request, 'Unauthorized user role.')
         return redirect('login')
+
+
 
 def logout(request):
     DeleteSession(request)
@@ -190,7 +194,7 @@ def drivers_list(request):
     if not drivers:
     # If data is not in the cache, retrieve from the database and set the cache
         drivers = Driver.objects.select_related('user').all().values(
-            'id', 'driver_name', 'license_number', 'phone_number', 'adhaar_number', 'address', 'date_of_birth', 'date_joined',
+            'id', 'driver_name', 'license_number', 'mobile_number', 'adhaar_number', 'address', 'date_of_birth', 'date_joined',
             'user__username', 'user__email', 'user__first_name', 'user__last_name'
         )
         cache.set('cache_drivers', list(drivers), timeout=None)

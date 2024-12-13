@@ -156,14 +156,13 @@ class JobCard(models.Model):
     job_card_number = models.CharField(max_length=20, unique=True, editable=False)
     technician = models.ForeignKey('Technician', related_name='job_cards',  on_delete=models.CASCADE, null=True, blank=True)
     driver= models.ForeignKey('Driver', related_name='job_cards',  on_delete=models.CASCADE, null=True, blank=True)
-    job_date = models.DateField()
+    date = models.DateField()
     reported_defect = models.TextField()
-    completed_action = models.TextField()
+    completed_action = models.TextField(null=True, blank=True)
     party = models.ForeignKey('Party', related_name='job_cards', on_delete=models.SET_NULL, null=True, blank=True)
     vehicle = models.ForeignKey('Vehicle', related_name='job_cards', on_delete=models.CASCADE)
-    completed_status = models.CharField(max_length=20, choices=JOB_CARD_STATUS, default='pending')
+    status = models.CharField(max_length=20, choices=JOB_CARD_STATUS, default='pending')
     labour_cost = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, validators=[MinValueValidator(0)])
-    total_cost = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, validators=[MinValueValidator(0)])
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -181,9 +180,10 @@ class JobCard(models.Model):
 
 class JobCardItem(models.Model):
     job_card = models.ForeignKey(JobCard, related_name='items', on_delete=models.CASCADE)
-    product = models.ForeignKey('Product', related_name='job_card_items', on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, related_name='job_card_items', on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(validators=[MinValueValidator(1)])
     cost = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
+    total_cost = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, validators=[MinValueValidator(0)])
     def __str__(self):
         return f"Item {self.product.id} for Job Card {self.job_card.job_card_number}"
 
