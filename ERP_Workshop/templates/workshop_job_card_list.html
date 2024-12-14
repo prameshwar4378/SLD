@@ -147,7 +147,7 @@
             </div>
             <div class="modal-body text-left">
                 <div class="alert alert-danger d-none" id="createJobCardError"></div>
-                <form id="createJobCardForm" method="POST" enctype="multipart/form-data" action="{% url 'workshop_create_job_card' %}">
+                <form id="createJobCardForm" method="POST" enctype="multipart/form-data" {% url 'workshop_create_job_card' %}>
                     {% csrf_token %}
                     <div class="row"> 
                         <div class="col-sm-4">
@@ -170,8 +170,8 @@
                         </div> 
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary bgcolor px-3" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="button" class="btn btn-secondary bgcolor px-3 " data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary submit-btn" >Submit</button>
                     </div>
                 </form>
                 
@@ -181,9 +181,6 @@
     </div>
 </div>
 
-
- 
- 
 <script>
  $(function(){
   $("#id_driver").selectize();

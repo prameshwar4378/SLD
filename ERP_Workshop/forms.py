@@ -168,7 +168,7 @@ class JobCardItemForm(forms.ModelForm):
         widgets = {
             'quantity': forms.NumberInput(attrs={'min': 1}),
             'cost': forms.NumberInput(attrs={'step': 1,'min': 0}),
-      
+            'total_cost': forms.NumberInput(attrs={'readonly': 'readonly'}),
             'quantity': forms.NumberInput(attrs={
                 'class': 'form-control',
                 'min': '1',

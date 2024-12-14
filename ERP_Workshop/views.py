@@ -69,9 +69,11 @@ def job_card_item_list(request, id):
     close_job_card_form=CloseJobCardForm()
     job_card = get_object_or_404(JobCard, id=id)
     # Fetch product data and cache it
+    close_job_card_form=CloseJobCardForm(instance=job_card)
+
     items = JobCardItem.objects.filter(job_card=job_card).order_by('-id')
     total_cost = items.aggregate(Sum('cost'))['cost__sum']
-    total_cost = round(total_cost, 2) if total_cost is not None else 0.00
+    total_cost = round(total_cost, 2) if total_cost is not None else 0
 
     total_cost=None
     labour_cost=None
@@ -95,14 +97,14 @@ def job_card_item_list(request, id):
             # Recalculate total cost after saving a new item
             items = JobCardItem.objects.filter(job_card=job_card).order_by('-id')
             total_cost = items.aggregate(Sum('total_cost'))['total_cost__sum']
-            total_cost = round(total_cost, 2) if total_cost is not None else 0.00
+            total_cost = round(total_cost, 2) if total_cost is not None else 0
         else:
             print("Form errors:", form.errors)
     else:
         items = JobCardItem.objects.filter(job_card=job_card).order_by('-id')
         total_cost = items.aggregate(Sum('total_cost'))['total_cost__sum']
-        total_cost = round(total_cost, 2) if total_cost is not None else 0.00
-        labour_cost=int(job_card.labour_cost) if job_card.labour_cost is not None else 0.00
+        total_cost = round(total_cost, 2) if total_cost is not None else 0
+        labour_cost=int(job_card.labour_cost) if job_card.labour_cost is not None else 0
         grand_total_cost=round(total_cost+labour_cost,2)
 
     form = JobCardItemForm()
@@ -130,7 +132,7 @@ def delete_job_card_item(request, id):
 
 def close_job_card(request):
     if request.method == 'POST':
-        job_card_id=request.POST.get('job_card_id')
+        job_card_id=request.POST.get('job_card_id') 
         job_card = JobCard.objects.get(id=job_card_id)  # Retrieve the JobCard instance
         form = CloseJobCardForm(request.POST,instance=job_card)
         if form.is_valid():
@@ -339,13 +341,13 @@ def purchase_item_list(request,id):
             fm.save()
             item=PurchaseItem.objects.filter(purchase=purchase).order_by('-id')
             total_amount = item.aggregate(Sum('total_amount'))['total_amount__sum']
-            total_amount = round(total_amount, 2) if total_amount is not None else 0.00  # In case there are no items, set total_amount to 0
+            total_amount = round(total_amount, 2) if total_amount is not None else 0  # In case there are no items, set total_amount to 0
         else:
             print("Form errors:", form.errors)
     else:
             item=PurchaseItem.objects.filter(purchase=purchase).order_by('-id')
             total_amount = item.aggregate(Sum('total_amount'))['total_amount__sum']
-            total_amount = round(total_amount, 2) if total_amount is not None else 0.00  # In case there are no items, set total_amount to 0
+            total_amount = round(total_amount, 2) if total_amount is not None else 0  # In case there are no items, set total_amount to 0
 
     form = PurchaseItemForm()
     return render(request, "workshop_purchase_item_list.html",{'form':form,'item':item,'purchase':purchase,'product_data':product_data,'total_amount':total_amount})

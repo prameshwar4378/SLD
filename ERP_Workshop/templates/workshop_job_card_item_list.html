@@ -126,12 +126,6 @@
                     </div>
                 </div>
 
-                <!-- Bill Type -->
-                <div class="col-sm-3 mb-2">
-                    <div class="info-field">
-                        <strong>Status:</strong> {{ job_card.status }}
-                    </div>
-                </div>
 
                 <!-- Bill Date -->
                 <div class="col-sm-3 mb-2">
@@ -139,7 +133,22 @@
                         <strong>Date:</strong> {{ job_card.date }}
                     </div>
                 </div>
- 
+                <!-- Bill Type -->
+                <div class="col-sm-3 mb-2">
+                    {% if job_card.status == "pending" %}
+                    <div class="info-field" style="background:rgb(243, 146, 146);">
+                        <strong>Status:</strong> Pending
+                    </div>
+                    {% elif job_card.status == "in_progress" %}
+                    <div class="info-field" style="background:rgb(231, 231, 161);">
+                        <strong>Status:</strong> In Progress
+                    </div>
+                    {% else %}
+                    <div class="info-field" style="background:rgb(111, 228, 111);">
+                        <strong>Status:</strong> Completed
+                    </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
 
